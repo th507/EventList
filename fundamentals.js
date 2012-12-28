@@ -1,16 +1,18 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 // find unique and not-empty item
 // http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/#comment-348025468
-Array.prototype.unique = function(){
-  return this.filter(function(value, key, arr){
+Array.prototype.unique = function() {
+  return this.filter( function(value, key, arr) {
     return value && ( key === arr.lastIndexOf( value ) );
-  });
+  } );
 };
 
 // find array difference
 // http://stackoverflow.com/questions/1187518/javascript-array-difference
 Array.prototype.diff = function(a) {
-  return this.filter(function(i) { return ~a.indexOf( i );});
+  return this.filter( function(i) {
+    return ~a.indexOf( i );
+  } );
 };
 
 /**
@@ -136,7 +138,9 @@ function hasProperty(obj, prop) {
   if ( !obj || !prop ) {
     throw new Error( "prop or obj not found" );
   }
-  if ( getTypeOf( obj ) !== "Object" && getTypeOf( obj ) !== "Function" && getTypeOf( obj ) !== "HTMLHtmlElement" ) {
+  if (  getTypeOf( obj ) !== "Object" &&
+        getTypeOf( obj ) !== "Function" &&
+        getTypeOf( obj ) !== "HTMLHtmlElement" ) {
     throw new Error( "prop type mismatch: " + obj.toString() + " is " + getTypeOf( obj ) );
   }
 
@@ -146,7 +150,7 @@ function hasProperty(obj, prop) {
   }
   else {
     if ( !obj.prototype ) {
-      throw new Error( "Unable to call" + obj.toString() + "'s prototype.");
+      return ( prop in obj );
     }
     return ( ( prop in obj ) && !( prop.prototype in obj ) );
   }
@@ -168,7 +172,7 @@ function hasProperty(obj, prop) {
 function setProperty(obj, key, val) {
   // FIXME: why using  fails
   if ( hasProperty( Object, "defineProperty" ) ) {
-    Object.defineProperty( obj, key, {"value": val} );
+    Object.defineProperty( obj, key, { "value": val } );
   }
   else {
     obj[key] = val;
