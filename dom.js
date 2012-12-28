@@ -53,9 +53,9 @@ var manipulateClass = function(el, option) {
   if ( option.add ) {
     // in case there is duplicate
     var classToAdd = option.add.split( " " );
-    // TODO: needs testing
-    Array.prototype.push.apply( _classNameArray, classToAdd );
-    _classNameArray = _classNameArray.unique();
+
+    // remove duplicates and join two arraries
+    Array.prototype.push.apply( _classNameArray, classToAdd.diff( _classNameArray, "exclude" ) );
   }
   _className = _classNameArray.join( " " );
   el.className = _className;
