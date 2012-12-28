@@ -3,7 +3,7 @@
 
 var ftcCookie = (function() {
   function getCookiesName() {
-    return document.cookie.match(/\w+(?==)/g);
+    return document.cookie.match( /\w+(?==)/g );
   }
 
   function deleteCookieByName(arr) {
@@ -45,9 +45,9 @@ var ftcCookie = (function() {
           i, g;
       for ( i = 0; g = item[i]; i++ ) {
         while ( g.charAt(0) === " " ) {
-          g = g.substring(1, g.length);
+          g = g.substring( 1, g.length );
         }
-        if ( g.indexOf(prop_equals) === 0 ) {
+        if ( g.indexOf( prop_equals ) === 0 ) {
           return g.substring( prop_equals.length, g.length ).replace( /\"/g, "" );
         }
       }
