@@ -8,7 +8,7 @@
  */
 function ___(el) {
   return document.getElementById( el );
-};
+}
 
 /**
  * @name elementHasClass
@@ -92,7 +92,7 @@ function manipulateClass(el, option) {
   _className = _classNameArray.join( " " );
   el.className = _className;
   return;
-};
+}
 
 /**
  * @name toggleElement
@@ -107,4 +107,4 @@ function toggleElement(el, state) {
     return;
   }
   return ___( el ).style.display = state ? state : "none";
-};
+}
