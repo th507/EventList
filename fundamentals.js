@@ -46,7 +46,7 @@ function getTypeOf(obj) {
  * @param position {integer}
  */
 function extract(_arguments, position) {
-  return [].slice.call( _arguments, position );
+  return [].slice.call( _arguments, position || 0 );
 }
 
 
