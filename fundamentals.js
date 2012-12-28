@@ -129,7 +129,7 @@ function appendArray(arr, orginal) {
   return [].push.apply( orginal, arr );
 }
 
-
+// polyfilling Date.now
 if( getTypeOf( Date.now ) !== 'Function' ) {
   // lease efficient way to polyfill Date.now
   // but again, we do not put much optimization in legacy browsers
