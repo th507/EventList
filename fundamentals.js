@@ -1,4 +1,7 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
+/*global features:true, ActiveXObject:true */
+
+
 // find unique and not-empty item
 // http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/#comment-348025468
 Array.prototype.unique = function() {
@@ -183,6 +186,8 @@ function setProperty(obj, key, val) {
  * @name elementHasClass
  * @function
  *
+ * @description
+ *
  * @param element
  * @param _className
  */
@@ -200,3 +205,133 @@ function elementHasClass(el, _className) {
   return ~( " " + el.className + " " ).indexOf( " " + _className + " " );
 }
 
+// so we can kill various log in a single stroke
+var konsole = 'console' in window ? console : function() {};
+
+
+
+/**
+ * @name storeInSQL
+ *
+ * @description
+ *
+ * @param
+ */
+var storeInSQL = function() {};
+/**
+ * @name unifiedStorage
+ * @object
+ *
+ * @description
+ *
+ * @param
+ */
+var unifiedStorage = (function(){
+  return {
+    clear : function() {
+      if ( features && features.incognito ) {
+        return false;
+      }
+      konsole.info( "Purging LSStore." );
+      localStorage.clear();
+      return false;
+    },
+    read: function() {
+      if ( features && features.incognito ) {
+        return null;
+      }
+      var key = ( arguments.length === 1 ) ? arguments[0] : arguments;
+
+      if ( getTypeOf( key ) === "String" ) {
+        return localStorage.getItem( key ) || null;
+      }
+      else {
+        if ( key.length === 1 ) {
+          key = key[0];
+        }
+        for ( var LSContent = {}, item, i = 0; item = key[i]; i++ ) {
+          LSContent[item] = localStorage.getItem( item ) || null;
+        }
+        return LSContent;
+      }
+    },
+    store: function(key, value) {
+      if ( features && features.incognito ) {
+        return;
+      }
+
+      if ( key && localStorage.getItem(key) ) {
+        localStorage.removeItem(key);
+        if (!value) {
+          return;
+        }
+      }
+      localStorage.setItem( key, value );
+      konsole.info( "LSStore: " + key + "." );
+    },
+    SQL: function(_callback, FORCE_REFRESH) { // needs to migrate from refresh_cache.js TOFIX
+      return storeInSQL( _callback, FORCE_REFRESH );
+    }
+  };
+}());
+
+/**
+ * @name ftcXHR
+ * @function
+ *
+ * @description
+ *
+ *
+ * @param src
+ * @param _callback
+ * @param option
+ */
+var ftcXHR = function(src, _callback, option) {
+  if ( getTypeOf( _callback ) === "Object" ) {
+    option = _callback;
+    _callback = option.callback;
+  }
+  option          = option || {};
+  option.async    = option.async || true;
+  option.context  = option.context || null;
+  option.method   = ( option.method || "" ) .toUpperCase() || "GET";
+
+  var xhr;
+
+  if ( "XMLHttpRequest" in window ) {
+    xhr = new XMLHttpRequest();
+  }
+  else if ( "ActiveXObject" in window ) {
+    xhr = new ActiveXObject( "Microsoft.XMLHTTP" );
+  }
+  else {
+    throw new Error( "Unable to create HTTPRequest" );
+  }
+
+  // passing parameters to XMLHttpRequest’s onreadystatechange function
+  // http://whacked.net/2007/11/27/passing-parameters-to-xmlhttprequests-onreadystatechange-function/
+  xhr.onreadystatechange = function(context) {
+    return function() {
+      if ( this.readyState !== 4 ) {
+        return;
+      }
+      // FIXME
+      // maybe we should look out for other status code
+      if ( this.status === 200 ) {
+        _callback.call( context, xhr.responseText );
+      }
+    };
+  }(option.context);
+
+  xhr.open( "GET", src, false );
+  xhr.send( null );
+
+  if ( option.error ) {
+    xhr.onerror = function() { option.error.call( option.context );};
+  }
+  if ( option.load ) {
+    xhr.onload = function(){ option.load.call( option.context, xhr.responseText ); };
+  }
+
+  return;
+};
