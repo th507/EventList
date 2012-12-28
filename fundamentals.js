@@ -165,6 +165,8 @@ function hasProperty(obj, prop) {
   if ( !obj || !prop ) {
     throw new Error( "prop or obj not found" );
   }
+  // FIXME:
+  // Is there ANY common type missing?
   if (  getTypeOf( obj ) !== "Object" &&
         getTypeOf( obj ) !== "Function" &&
         getTypeOf( obj ) !== "HTMLHtmlElement" ) {
@@ -206,28 +208,6 @@ function setProperty(obj, key, val) {
   }
 }
 
-/**
- * @name elementHasClass
- * @function
- *
- * @description
- *
- * @param element
- * @param _className
- */
-function elementHasClass(el, _className) {
-  if ( !el ) {
-    throw new Error( "elementHasClass failed becase element is undefined" );
-  }
-  if ( !_className ) {
-    return true;
-  }
-  if ( !el.className ) {
-    return false;
-  }
-
-  return ~( " " + el.className + " " ).indexOf( " " + _className + " " );
-}
 
 // so we can kill various log in a single stroke
 var konsole = 'console' in window ? console : function() {};
@@ -285,7 +265,7 @@ var unifiedStorage = (function(){
       }
 
       if ( key && localStorage.getItem(key) ) {
-        localStorage.removeItem(key);
+        localStorage.removeItem( key );
         if (!value) {
           return;
         }

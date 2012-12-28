@@ -6,9 +6,33 @@
  * shorthand for getElementById
  * @param el
  */
-var ___ = function(el) {
+function ___(el) {
   return document.getElementById( el );
 };
+
+/**
+ * @name elementHasClass
+ * @function
+ *
+ * @description
+ *
+ * @param element
+ * @param _className
+ */
+function elementHasClass(el, _className) {
+  if ( !el ) {
+    throw new Error( "elementHasClass failed becase element is undefined" );
+  }
+  if ( !_className ) {
+    return true;
+  }
+  if ( !el.className ) {
+    return false;
+  }
+
+  // so that we do not have to make special case for the 1st / last item
+  return ~( " " + el.className + " " ).indexOf( " " + _className + " " );
+}
 
 /**
  * @name manipulateClass
@@ -26,13 +50,15 @@ var ___ = function(el) {
  *    remove: STRING (must be unique)
  * }
  */
-var manipulateClass = function(el, option) {
+function manipulateClass(el, option) {
   if ( !el || !option || typeof option !== "object" ) {
     return;
   }
 
-  if ( ( option.add &&typeof option.add !== "string" ) || ( option.remove && typeof option.remove !== "string" ) ) {
-    throw new TypeError( "Parameters malformed." + option + " should be object of string" );
+  if ( ( option.add &&typeof option.add !== "string" ) ||
+       ( option.remove && typeof option.remove !== "string" ) ) {
+    throw new TypeError( "Parameters malformed." + option.toString() +
+                         " should be object of string" );
   }
   var _className = el.className;
 
@@ -41,6 +67,7 @@ var manipulateClass = function(el, option) {
       el.className = option.add;
       return;
     }
+    // nothing else to do
     return;
   }
 
@@ -55,6 +82,11 @@ var manipulateClass = function(el, option) {
     var classToAdd = option.add.split( " " );
 
     // remove duplicates and join two arraries
+    // `classToAdd.diff' remove what is already in original array
+    // `push.apply' equals to a.concat(b)
+    // only `push' does not create new array
+    // so in theory, push might be slightly faster
+    // and we do not want a new array anyway
     Array.prototype.push.apply( _classNameArray, classToAdd.diff( _classNameArray, "exclude" ) );
   }
   _className = _classNameArray.join( " " );
@@ -70,7 +102,7 @@ var manipulateClass = function(el, option) {
  * @param el
  * @param state
  */
-var toggleElement = function(el, state) {
+function toggleElement(el, state) {
   if ( !___( el ) ) {
     return;
   }
