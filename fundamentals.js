@@ -13,7 +13,7 @@ Array.prototype.unique = function() {
 // find array difference
 // http://stackoverflow.com/questions/1187518/javascript-array-difference
 /**
- * 
+ *
  * @param arr
  * @param option
  *
@@ -38,8 +38,8 @@ Array.prototype.diff = function(arr, option) {
 
   if ( option === "exclude" ) {
     return this.filter( function(i) {
-      return !~arr.indexOf(i); 
-    } ); 
+      return !~arr.indexOf(i);
+    } );
   }
 };
 
@@ -165,7 +165,7 @@ if( getTypeOf( Date.now ) !== 'Function' ) {
 // https://gist.github.com/332357
 if ( !Object.prototype.hasOwnProperty ) {
   Object.prototype.hasOwnProperty = function(prop) {
-    var proto = this.__proto__ || this.constructor.prototype;
+    var proto = this.prototype || this.constructor.prototype;
     return ( prop in this ) && ( !( prop in proto ) || proto[prop] !== this[prop] );
   };
 }
