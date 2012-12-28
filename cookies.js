@@ -1,5 +1,5 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
-/*global newArray:true, hasProperty:true */
+/*global newArray:true */
 
 var ftcCookie = (function() {
   function getCookiesName() {
@@ -32,7 +32,7 @@ var ftcCookie = (function() {
 
 
       for( prop in obj ) {
-        if ( hasProperty( prop, obj ) ) {
+        if ( obj.hasOwnProperty( prop ) ) {
           document.cookie = prop + "=" + obj[prop] +_expiry_time +
             "; domain=" + _host +
             "; path=" + _path;
