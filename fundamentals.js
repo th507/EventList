@@ -213,15 +213,6 @@ function setProperty(obj, key, val) {
 var konsole = 'console' in window ? console : function() {};
 
 
-
-/**
- * @name storeInSQL
- *
- * @description
- *
- * @param
- */
-var storeInSQL = function() {};
 /**
  * @name unifiedStorage
  * @object
@@ -231,6 +222,15 @@ var storeInSQL = function() {};
  * @param
  */
 var unifiedStorage = (function(){
+  /**
+   * @name storeInSQL
+   *
+   * @description
+   *
+   * @param
+   */
+  var storeInSQL = function() {};
+
   return {
     clear : function() {
       if ( features && features.incognito ) {
