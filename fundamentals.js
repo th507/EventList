@@ -29,6 +29,7 @@ Array.prototype.unique = function() {
  * a.diff(b, "exclude")   ->  [2]
  */
 Array.prototype.diff = function(arr, option) {
+  // we do not want to put if inside filter
   if ( !option ) {
     return this.filter( function(i) {
       return ~arr.indexOf( i );
@@ -161,28 +162,12 @@ if( getTypeOf( Date.now ) !== 'Function' ) {
 }
 
 // polyfilling hasOwnProperty
-function hasProperty(obj, prop) {
-  if ( !obj || !prop ) {
-    throw new Error( "prop or obj not found" );
-  }
-  // FIXME:
-  // Is there ANY common type missing?
-  if (  getTypeOf( obj ) !== "Object" &&
-        getTypeOf( obj ) !== "Function" &&
-        getTypeOf( obj ) !== "HTMLHtmlElement" ) {
-    throw new Error( "prop type mismatch: " + obj.toString() + " is " + getTypeOf( obj ) );
-  }
-
-
-  if ( !!Object.hasOwnProperty ) {
-    return obj.hasOwnProperty( prop );
-  }
-  else {
-    if ( !obj.prototype ) {
-      return ( prop in obj );
-    }
-    return ( ( prop in obj ) && !( prop.prototype in obj ) );
-  }
+// https://gist.github.com/332357
+if ( !Object.prototype.hasOwnProperty ) {
+  Object.prototype.hasOwnProperty = function(prop) {
+    var proto = this.__proto__ || this.constructor.prototype;
+    return ( prop in this ) && ( !( prop in proto ) || proto[prop] !== this[prop] );
+  };
 }
 
 // FIXME:
@@ -199,8 +184,7 @@ function hasProperty(obj, prop) {
  * @param val {String/Object/Function/Array}
  */
 function setProperty(obj, key, val) {
-  // FIXME: why using  fails
-  if ( hasProperty( Object, "defineProperty" ) ) {
+  if ( Object.hasOwnProperty( "defineProperty" ) ) {
     Object.defineProperty( obj, key, { "value": val } );
   }
   else {
