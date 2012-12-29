@@ -24,14 +24,14 @@ var features = {
   // detecting touch capability
   // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
   touchInput:   !!( 'ontouchstart' in window ), // cannot use window.ontouchstart
-  // has localStorage and sessionStorage
-  localStorage: !!( localStorage && sessionStorage ),
+  /* has localStorage and sessionStorage
+  localStorage: !!( localStorage && sessionStorage ),*/
   // has web SQL
   webSQL:       !!window.openDatabase,
   // has indexDB
-  indexDB:      !!window.IDBDatabase,
+  indexDB:      !!window.IDBDatabase/*,
   // debug mode
-  debugLevel:   document.cookie.match( /dbg/ ) || 0
+  debugLevel:   document.cookie.match( /dbg/ ) || 0*/
 };
 
 features = features || {};
