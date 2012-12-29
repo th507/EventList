@@ -26,8 +26,7 @@
   // constructor for delegates method object/array
   function delegatesConstructor(arr) {
     this.disabled = false;
-    this.delegates = this.delegates || [];
-    Array.prototype.push.apply( this.delegates, newArray( arr ) );
+    this.delegates = newArray( arr );
 
   }
 
@@ -148,9 +147,9 @@
    * @param arr
    */
   delegatesConstructor.prototype.listen = function(arr) {
+    this.delegates = this.delegates || [];
     // better than [].concat
     // because concat will create a new array
-    this.delegates = this.delegates || [];
     Array.prototype.push.apply( this.delegates, newArray( arr ) );
 
     if ( this.__unlistened__ === 1 ) {
@@ -169,7 +168,7 @@
 
 
   // constructor for event delegate Center
-  var EventsConstructor = function(element) {
+  function EventsConstructor(element) {
     setProperty( this, "__root__", element || document );
  
     // for lesser browser
