@@ -13,7 +13,7 @@ var features = {
   opera:      !!window.opera,
 
   platform:   ( navigator.appVersion || navigator.userAgent ),
-  isLocalFile:(location.protocol === "file:"),
+  isLocalFile:(location.protocol !== "http:" && location.protocol !== "https:"),
 
   webapp: /webapp/.test( location.search ) || navigator.userAgent.indexOf("Mobile"),
 
@@ -27,7 +27,7 @@ var features = {
   // has web SQL
   webSQL:     !!window.openDatabase,
   // has indexDB
-  indexDB:    !!window.IDBDatabase,
+  indexDB:    !!window.IDBDatabase
 };
 
 features = features || {};
