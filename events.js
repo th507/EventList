@@ -2,7 +2,7 @@
 /*
  * requires config.js
  * */
-/*global features:true, getTypeOf:true, extract:true, makeArray:true, newArray:true, appendArray:true, setProperty:true, elementHasClass:true */
+/*global features:true, getTypeOf:true, extract:true, makeArray:true, newArray:true, setProperty:true, elementHasClass:true */
 
 /*
  * entree begins
@@ -23,7 +23,7 @@
   function delegatesConstructor(arr) {
     this.disabled = false;
 
-    this.delegates = appendArray( newArray( arr ) );
+    Array.prototype.push.apply( this.delegates, newArray( arr ) );
 
   }
 
@@ -47,7 +47,7 @@
   // `handleEvent' nicely hidden inside its `prototype'
   delegatesConstructor.prototype.handleEvent = function(evt) {
     // master switch
-    if ( this.disabled ) {
+    if ( this.disabled || this.delegates.length === 0 ) {
       return;
     }
 
@@ -58,7 +58,9 @@
 
     var delegateElement, i, item, _tagName, _className, pos,
         targetElement = getEventTarget(evt),
-        delegateArray = this.delegates;
+        delegateArray = this.delegates,
+        delegateSelector = "selector",
+        delegateFunction = "delegateFunction";
 
     function execute(func) {
       func.call( targetElement );
@@ -70,7 +72,7 @@
         continue;
       }
 
-      delegateElement = item.selector;
+      delegateElement = item[delegateSelector];
 
       /*
        * support 4 selectors:
@@ -83,7 +85,7 @@
         // #id
         case "#" :
           if ( "#" + targetElement.id === delegateElement ) {
-            execute( item.delegateFunction );
+            execute( item[delegateFunction] );
             continue;
           }
           break;
@@ -91,7 +93,7 @@
         case "." :
           // so we do not have to consider whether the className is the first or the last
           if ( elementHasClass( targetElement, delegateElement.slice( 0 ) ) ) {
-            execute( item.delegateFunction );
+            execute( item[delegateFunction] );
             continue;
           }
           break;
@@ -105,7 +107,7 @@
             _className = _tagName.splice(0, pos + 1);
             _tagName.pop();
             if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
-              execute( item.delegateFunction );
+              execute( item[delegateFunction] );
               continue;
             }
           }
@@ -116,7 +118,7 @@
             }
             else {
               if ( targetElement.tagName.toLowerCase() === delegateElement ) {
-                execute( item.delegateFunction );
+                execute( item[delegateFunction] );
                 continue;
               }
             }
@@ -129,12 +131,17 @@
   delegatesConstructor.prototype.listen = function(arr) {
     // better than [].concat
     // because concat will create a new array
-    arr = makeArray( arr );
-    this.delegates = appendArray( arr, this.delegates );
+    Array.prototype.push.apply( this.delegates, makeArray( arr ) );
+
+    if ( this.__unlistened__ === 1 ) {
+      this.getRootElement().addEventListener( this.__event__, this );
+      this.__unlistened__ === 0;
+    }
   };
 
   delegatesConstructor.prototype.unlisten = function() {
     this.getRootElement().removeEventListener( this.__event__, this );
+    this.__unlistened__ = 1;
   };
 
 
@@ -146,6 +153,7 @@
     // always check for `__' prefix in for-in loop
   };
 
+  // focus and blur does NOT bubble up
   EventsConstructor.prototype.listen = function() {
     if ( !arguments.length ) {
       return;
@@ -164,16 +172,24 @@
       setProperty( this[_event], "__root__", this.getRootElement() );
       setProperty( this[_event], "__event__", _event );
 
+      // allow overwrite
+      setProperty( this[_event], "__unlistened__", 0, true );
+
       this.getRootElement().addEventListener( _event, this[_event] );
     }
     else {
-      console.log( "asdf" );
       this[_event].listen( extract( arguments, 1 ) );
+
+      if ( this[_event].isUnlistened ) {
+        this.getRootElement().addEventListener( _event, this[_event] );
+        this.__unlistened__ = 0;
+      }
     }
   };
 
   EventsConstructor.prototype.unlisten = function(_event) {
     this.getRootElement().removeEventListener( _event, this[_event] );
+    this[_event].__unlistened__ = 1;
   };
 
   // FIXME/TODO: do we need this iterator?
@@ -204,6 +220,10 @@
     else {
       throw new Error( "Root element not found." );
     }
+  };
+
+  EventsConstructor.prototype.isUnlistened = function() {    
+      return this.__unlistened__ || 0;
   };
 
   // FIXME
