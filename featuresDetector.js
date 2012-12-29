@@ -13,9 +13,9 @@ var features = {
   opera:      !!window.opera,
 
   platform:   ( navigator.appVersion || navigator.userAgent ),
+  isLocalFile:(location.protocol === "file:"),
 
-  // FIXME: better detection through uastring
-  webapp: /webapp/.test( location.search ),
+  webapp: /webapp/.test( location.search ) || navigator.userAgent.indexOf("Mobile"),
 
   // FEATURES
   // is retina display, or more generally speaking,
@@ -23,19 +23,20 @@ var features = {
   retina:     ( window.devicePixelRatio || 1 ) - 1,
   // detecting touch capability
   // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
-  touchInput:   !!( 'ontouchstart' in window ), // cannot use window.ontouchstart
-  /* has localStorage and sessionStorage
-  localStorage: !!( localStorage && sessionStorage ),*/
+  touchInput: !!( 'ontouchstart' in window ), // cannot use window.ontouchstart
   // has web SQL
-  webSQL:       !!window.openDatabase,
+  webSQL:     !!window.openDatabase,
   // has indexDB
-  indexDB:      !!window.IDBDatabase/*,
-  // debug mode
-  debugLevel:   document.cookie.match( /dbg/ ) || 0*/
+  indexDB:    !!window.IDBDatabase,
 };
 
 features = features || {};
+
 features.mobile = features.android || features.ios || features.blackBerry || features.ieMobile || false;
+
+// debug mode
+features.debugLevel = features.isLocalFile ? 0 : ( document.cookie.match( /dbg/ ) || 0 );
+
 features.version = (function(){
   var ua = navigator.userAgent;
   if ( features.ios ) {
@@ -47,7 +48,7 @@ features.version = (function(){
 }());
 // Is this falseage running in incognito/private mode?
 features.incognito = (function() {
-  if ( !features.localStorage ) {
+  if ( features.isLocalFile || !window.localStorage ) {
     return true;
   }
   try {
