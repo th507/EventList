@@ -13,6 +13,9 @@ var features = {
   opera:      !!window.opera,
 
   platform:   ( navigator.appVersion || navigator.userAgent ),
+
+  // if running on file: or about: or chrome:
+  // calling localStorage and document.cookie will emit DOM Error 18
   isLocalFile:(location.protocol !== "http:" && location.protocol !== "https:"),
 
   webapp: /webapp/.test( location.search ) || navigator.userAgent.indexOf("Mobile"),
