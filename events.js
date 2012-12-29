@@ -8,12 +8,16 @@
  * entree begins
  * */
 (function(root, name) {
+  // in case we decide to change those names later on
+  var delegateSelector = "selector",
+      delegateFunction = "delegateFunction";
+
   // shorthand or toggle individual state of delegateFunction
-  function changeState(item, prop, arr, state) {
-    var i, len = arr.length;
-    for ( i = 0; i < len; i++ ) {
-      if ( arr[i][prop] === item ) {
-        arr[i].disabled = state;
+  function changeState(delegateArray, item, state) {
+    var i, delegateItem;
+    for ( i = 0; delegateItem = delegateArray[i]; i++ ) {
+      if ( delegateItem[delegateSelector] === item ) {
+        delegateItem.disabled = state;
         break;
       }
     }
@@ -22,7 +26,7 @@
   // constructor for delegates method object/array
   function delegatesConstructor(arr) {
     this.disabled = false;
-
+    this.delegates = this.delegates || [];
     Array.prototype.push.apply( this.delegates, newArray( arr ) );
 
   }
@@ -32,22 +36,30 @@
    * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
    */
   delegatesConstructor.prototype.disable = function(item) {
-    changeState( item, "selector", this.delegates, true );
+    changeState( this.delegates, item, true );
   };
 
   delegatesConstructor.prototype.enable = function(item) {
-    changeState( item, "selector", this.delegates, false );
+    changeState( this.delegates, item, false );
   };
 
-  // actual function to attach events
-  // we all know that we could bind object in addEventListener
-  // http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventListener-handleEvent
-  // provided there is a `handleEvent' property in the object
-  // but the trick is that we COULD use a function to generate an object with
-  // `handleEvent' nicely hidden inside its `prototype'
+  /**
+   * @name handleEvent
+   * @function
+   *
+   * @description
+   * actual function to attach events
+   * we all know that we could bind object in addEventListener
+   * http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventListener-handleEvent
+   * provided there is a `handleEvent' property in the object
+   * but the trick is that we COULD use a function to generate an object with
+   * `handleEvent' nicely hidden inside its `prototype'
+   *
+   * @param evt
+   */
   delegatesConstructor.prototype.handleEvent = function(evt) {
     // master switch
-    if ( this.disabled || this.delegates.length === 0 ) {
+    if ( this.disabled || this.delegates.length === 0) {
       return;
     }
 
@@ -58,9 +70,7 @@
 
     var delegateElement, i, item, _tagName, _className, pos,
         targetElement = getEventTarget(evt),
-        delegateArray = this.delegates,
-        delegateSelector = "selector",
-        delegateFunction = "delegateFunction";
+        delegateArray = this.delegates;
 
     function execute(func) {
       func.call( targetElement );
@@ -98,6 +108,7 @@
           }
           break;
           // tagName and/or tagName.className
+          // only takes in a single class
         default :
           pos = delegateElement.indexOf( "." );
           // tagName.className
@@ -128,9 +139,18 @@
     } // end of for
   };
 
+  /**
+   * @name listen
+   * @function
+   *
+   * @description
+   *
+   * @param arr
+   */
   delegatesConstructor.prototype.listen = function(arr) {
     // better than [].concat
     // because concat will create a new array
+    this.delegates = this.delegates || [];
     Array.prototype.push.apply( this.delegates, newArray( arr ) );
 
     if ( this.__unlistened__ === 1 ) {
@@ -195,7 +215,7 @@
     this[_event].__unlistened__ = 1;
   };
 
-  // FIXME/TODO: do we need this iterator?
+  // TODO: do we need this iterator?
   EventsConstructor.prototype.loop = function(_callback) {
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
@@ -229,9 +249,8 @@
       return this.__unlistened__ || 0;
   };
 
-  // FIXME
   // Events.* has no way of knowing the `__root__'
-  // has to delay this prototype function declaration
+  // we have to delay this prototype function declaration
   // to dismiss `EventsConstructor' not found error
   delegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
 
