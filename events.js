@@ -143,6 +143,9 @@
     this.getRootElement().removeEventListener( this.__event__, this );
     this.__unlistened__ = 1;
   };
+  delegatesConstructor.prototype.isUnlistened = function() {
+      return this.__unlistened__ || 0;
+  };
 
 
   // constructor for event delegate Center
