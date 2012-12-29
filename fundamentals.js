@@ -151,7 +151,9 @@ function appendArray(arr, orginal) {
     return arr;
   }
 
-  return [].push.apply( orginal, arr );
+  [].push.apply( orginal, arr );
+
+  return orginal;
 }
 
 // polyfilling Date.now
@@ -183,9 +185,11 @@ if ( !Object.prototype.hasOwnProperty ) {
  * @param key {String}
  * @param val {String/Object/Function/Array}
  */
-function setProperty(obj, key, val) {
+function setProperty(obj, key, val, writableFlag) {
   if ( Object.hasOwnProperty( "defineProperty" ) ) {
-    Object.defineProperty( obj, key, { "value": val } );
+    Object.defineProperty( obj, key, { value: val,
+                                       writable : writableFlag || false,
+    } );
   }
   else {
     obj[key] = val;
