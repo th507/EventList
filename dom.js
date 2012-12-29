@@ -30,8 +30,9 @@ function elementHasClass(el, _className) {
     return false;
   }
 
+
   // so that we do not have to make special case for the 1st / last item
-  return ~( " " + el.className + " " ).indexOf( " " + _className + " " );
+  return ( new RegExp( "\\b" + _className + "\\b" ).test( el.className );
 }
 
 /**
@@ -60,7 +61,7 @@ function manipulateClass(el, option) {
     throw new TypeError( "Parameters malformed." + option.toString() +
                          " should be object of string" );
   }
-  var _className = el.className;
+  var  _classNameArray, _className = el.className;
 
   if ( !_className ) {
     if ( option.add ) {
@@ -70,12 +71,18 @@ function manipulateClass(el, option) {
     // nothing else to do
     return;
   }
-
-  var _classNameArray = _className.split( " " ).unique();
+  
+  if ( Object.prototype.hasOwnProperty.call(document.body, "classList") {
+    // classList is not unique
+    _classNameArray = Array.prototype.unique.call( el.classList );
+  }
+  else {
+    _classNameArray = _className.split( " " ).unique();
+  }
 
   if ( option.remove ) {
     var classToRemove = option.remove.split( " " );
-    _classNameArray = _classNameArray.diff( classToRemove );
+    _classNameArray = Array.prototype.diff.call( _classNameArray, classToRemove );
   }
   if ( option.add ) {
     // in case there is duplicate
