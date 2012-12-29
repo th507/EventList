@@ -32,7 +32,7 @@ function elementHasClass(el, _className) {
 
 
   // so that we do not have to make special case for the 1st / last item
-  return ( new RegExp( "\\b" + _className + "\\b" ).test( el.className );
+  return ( new RegExp( "\\b" + _className + "\\b" ).test( el.className ) );
 }
 
 /**
@@ -72,7 +72,7 @@ function manipulateClass(el, option) {
     return;
   }
   
-  if ( Object.prototype.hasOwnProperty.call(document.body, "classList") {
+  if ( Object.prototype.hasOwnProperty.call( document.body, "classList" ) ) {
     // classList is not unique
     _classNameArray = Array.prototype.unique.call( el.classList );
   }
