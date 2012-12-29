@@ -135,7 +135,7 @@
 
     if ( this.__unlistened__ === 1 ) {
       this.getRootElement().addEventListener( this.__event__, this );
-      this.__unlistened__ === 0;
+      this.__unlistened__ = 0;
     }
   };
 
@@ -222,7 +222,7 @@
     }
   };
 
-  EventsConstructor.prototype.isUnlistened = function() {    
+  EventsConstructor.prototype.isUnlistened = function() {
       return this.__unlistened__ || 0;
   };
 
