@@ -188,7 +188,7 @@ if ( !Object.prototype.hasOwnProperty ) {
 function setProperty(obj, key, val, writableFlag) {
   if ( Object.hasOwnProperty( "defineProperty" ) ) {
     Object.defineProperty( obj, key, { value: val,
-                                       writable : writableFlag || false,
+                                       writable : writableFlag || false
     } );
   }
   else {
