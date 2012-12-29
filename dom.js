@@ -55,7 +55,7 @@ function manipulateClass(el, option) {
     return;
   }
 
-  if ( ( option.add &&typeof option.add !== "string" ) ||
+  if ( ( option.add && typeof option.add !== "string" ) ||
        ( option.remove && typeof option.remove !== "string" ) ) {
     throw new TypeError( "Parameters malformed." + option.toString() +
                          " should be object of string" );
