@@ -173,7 +173,7 @@
  
     // for lesser browser
     // always check for `__' prefix in for-in loop
-  };
+  }
 
   // focus and blur does NOT bubble up
   EventsConstructor.prototype.listen = function() {
