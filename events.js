@@ -104,8 +104,8 @@
           // now we know that "." will not be the leading character
           if ( ~pos ) {
             _tagName = delegateElement;
-            _className = _tagName.splice(0, pos + 1);
-            _tagName.pop();
+            _className = _tagName.splice( 0, pos + 1 );
+            _tagName = _tagName.slice( 0 , -1 );
             if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
               execute( item[delegateFunction] );
             }
