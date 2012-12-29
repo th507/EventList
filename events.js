@@ -2,7 +2,7 @@
 /*
  * requires config.js
  * */
-/*global features:true, getTypeOf:true, extract:true, makeArray:true, newArray:true, setProperty:true, elementHasClass:true */
+/*global extract:true, newArray:true, setProperty:true, elementHasClass:true */
 
 /*
  * entree begins
@@ -108,8 +108,8 @@
             _tagName.pop();
             if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
               execute( item[delegateFunction] );
-              continue;
             }
+            continue;
           }
           // tagName
           else {
@@ -119,19 +119,19 @@
             else {
               if ( targetElement.tagName.toLowerCase() === delegateElement ) {
                 execute( item[delegateFunction] );
-                continue;
               }
             }
+            continue;
           }
           // end of default branch
       } // end of switch
-    }
+    } // end of for
   };
 
   delegatesConstructor.prototype.listen = function(arr) {
     // better than [].concat
     // because concat will create a new array
-    Array.prototype.push.apply( this.delegates, makeArray( arr ) );
+    Array.prototype.push.apply( this.delegates, newArray( arr ) );
 
     if ( this.__unlistened__ === 1 ) {
       this.getRootElement().addEventListener( this.__event__, this );
