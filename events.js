@@ -10,7 +10,7 @@
 (function(root, name) {
   // in case we decide to change those names later on
   var delegateSelector = "selector",
-      delegateFunction = "delegateFunction";
+      delegateFunction = "handler";
 
   // shorthand or toggle individual state of delegateFunction
   function changeState(delegateArray, item, state) {
@@ -23,11 +23,23 @@
     }
   }
 
+  function getEventTarget(e) {
+    e = e || window.event;
+    return e.target || e.srcElement;
+  }
+
+  function execute(func, scope) {
+    func.call( scope );
+  }
+
+
   // constructor for delegates method object/array
   function delegatesConstructor(arr) {
     this.disabled = false;
     this.delegates = newArray( arr );
 
+    // allow overwrite
+    setProperty( this, "__unlistened__", 0, true );
   }
 
   /* create a object simular to array
@@ -58,22 +70,14 @@
    */
   delegatesConstructor.prototype.handleEvent = function(evt) {
     // master switch
-    if ( this.disabled || this.delegates.length === 0) {
+    if ( this.disabled || this.delegates.length === 0 ) {
       return;
     }
 
-    function getEventTarget(e) {
-      e = e || window.event;
-      return e.target || e.srcElement;
-    }
 
     var delegateElement, i, item, _tagName, _className, pos,
         targetElement = getEventTarget(evt),
         delegateArray = this.delegates;
-
-    function execute(func) {
-      func.call( targetElement );
-    }
 
 
     for ( i = 0; item = delegateArray[i]; i++ ) {
@@ -94,7 +98,7 @@
         // #id
         case "#" :
           if ( "#" + targetElement.id === delegateElement ) {
-            execute( item[delegateFunction] );
+            execute( item[delegateFunction], targetElement );
             continue;
           }
           break;
@@ -102,7 +106,7 @@
         case "." :
           // so we do not have to consider whether the className is the first or the last
           if ( elementHasClass( targetElement, delegateElement.slice( 0 ) ) ) {
-            execute( item[delegateFunction] );
+            execute( item[delegateFunction], targetElement );
             continue;
           }
           break;
@@ -117,18 +121,19 @@
             _className = _tagName.splice( 0, pos + 1 );
             _tagName = _tagName.slice( 0 , -1 );
             if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
-              execute( item[delegateFunction] );
+              execute( item[delegateFunction], targetElement );
             }
             continue;
           }
           // tagName
           else {
-            if ( /#/.test( delegateElement ) ) {
+            // apparently `#' will not be at 0
+            if ( delegateElement.indexOf( "#" ) > 0 ) {
               throw new Error ( delegateElement + "not supported, use #id instead." );
             }
             else {
               if ( targetElement.tagName.toLowerCase() === delegateElement ) {
-                execute( item[delegateFunction] );
+                execute( item[delegateFunction], targetElement );
               }
             }
             continue;
@@ -194,8 +199,6 @@
       setProperty( this[_event], "__root__", this.getRootElement() );
       setProperty( this[_event], "__event__", _event );
 
-      // allow overwrite
-      setProperty( this[_event], "__unlistened__", 0, true );
 
       this.getRootElement().addEventListener( _event, this[_event] );
     }
@@ -254,7 +257,7 @@
   delegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
 
 
-  
+
 
   // in case we need multiple instances
   root[name] = EventsConstructor;
