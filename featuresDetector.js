@@ -18,8 +18,6 @@ var features = {
   // calling localStorage and document.cookie will emit DOM Error 18
   isLocalFile:(location.protocol !== "http:" && location.protocol !== "https:"),
 
-  webapp: /webapp/.test( location.search ) || navigator.userAgent.indexOf("Mobile"),
-
   // FEATURES
   // is retina display, or more generally speaking,
   // What is the device's pixel ratio?
@@ -33,9 +31,24 @@ var features = {
   indexDB:    !!window.IDBDatabase
 };
 
-features = features || {};
-
 features.mobile = features.android || features.ios || features.blackBerry || features.ieMobile || false;
+
+features.webapp = (function() {
+  if ( !features.mobile ) {
+    return false;
+  }
+  
+  // in iPhone native app, we use index.html?webapp as address
+  if ( ~location.search.indexOf( "webapp" ) ) {
+    return true;
+  }
+  
+  if ( features.ios ) {
+    if ( !~navigator.userAgent.indexOf( "Safari" ) ) {
+      return true;
+    }
+  }
+}());
 
 // debug mode
 features.debugLevel = features.isLocalFile ? 0 : ( document.cookie.match( /dbg/ ) || 0 );
@@ -49,6 +62,7 @@ features.version = (function(){
     return parseFloat( ua.slice( ua.indexOf( "ndroid" ) + 7 ) );
   }
 }());
+
 // Is this falseage running in incognito/private mode?
 features.incognito = (function() {
   if ( features.isLocalFile || !window.localStorage ) {
@@ -63,3 +77,5 @@ features.incognito = (function() {
     return true;
   }
 }());
+
+window.features = features;
