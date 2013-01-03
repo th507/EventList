@@ -99,7 +99,6 @@
         case "#" :
           if ( "#" + targetElement.id === delegateElement ) {
             execute( item[delegateFunction], targetElement );
-            continue;
           }
           break;
           // .className
@@ -107,7 +106,6 @@
           // so we do not have to consider whether the className is the first or the last
           if ( elementHasClass( targetElement, delegateElement.slice( 0 ) ) ) {
             execute( item[delegateFunction], targetElement );
-            continue;
           }
           break;
           // tagName and/or tagName.className
@@ -123,7 +121,6 @@
             if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
               execute( item[delegateFunction], targetElement );
             }
-            continue;
           }
           // tagName
           else {
@@ -136,7 +133,6 @@
                 execute( item[delegateFunction], targetElement );
               }
             }
-            continue;
           }
           // end of default branch
       } // end of switch
