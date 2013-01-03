@@ -2,12 +2,12 @@
 /*
  * requires config.js
  * */
+
 /*global extract:true, newArray:true, setProperty:true, elementHasClass:true */
 
-/*
- * entree begins
- * */
+
 (function(root, name) {
+  "use strict";
   // in case we decide to change those names later on
   var delegateSelector = "selector",
       delegateFunction = "handler";
@@ -17,7 +17,7 @@
     var i, delegateItem;
     for ( i = 0; delegateItem = delegateArray[i]; i++ ) {
       if ( delegateItem[delegateSelector] === item ) {
-        delegateItem.disabled = state;
+        delegateItem.disabled = Boolean( state );
         break;
       }
     }
@@ -35,6 +35,7 @@
 
   // constructor for delegates method object/array
   function delegatesConstructor(arr) {
+    /*jshint validthis:true */
     this.disabled = false;
     this.delegates = newArray( arr );
 
@@ -129,7 +130,7 @@
           else {
             // apparently `#' will not be at 0
             if ( delegateElement.indexOf( "#" ) > 0 ) {
-              throw new Error ( delegateElement + "not supported, use #id instead." );
+              throw new Error( delegateElement + "not supported, use #id instead." );
             }
             else {
               if ( targetElement.tagName.toLowerCase() === delegateElement ) {
