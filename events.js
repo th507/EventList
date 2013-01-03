@@ -50,7 +50,7 @@
     this.delegates = arr || [];
 
     // allow overwrite
-    setProperty( this, "__unlistened__", 0, true );
+    setProperty( this, "__unlistened__", false, true );
   }
 
   /*
@@ -127,9 +127,9 @@
     // because concat will create a new array
     Array.prototype.push.apply( this.delegates, arguments );
 
-    if ( this.__unlistened__ === 1 ) {
+    if ( this.__unlistened__ === true ) {
       this.getRootElement().addEventListener( this.__event__, this );
-      this.__unlistened__ = 0;
+      this.__unlistened__ = false;
     }
   };
 
@@ -138,7 +138,7 @@
     this.__unlistened__ = 1;
   };
   DelegatesConstructor.prototype.isUnlistened = function() {
-      return this.__unlistened__ || 0;
+      return this.__unlistened__ || false;
   };
 
 
@@ -195,7 +195,7 @@
 
       if ( this[_event].isUnlistened ) {
         this.getRootElement().addEventListener( _event, this[_event] );
-        this.__unlistened__ = 0;
+        this.__unlistened__ = false;
       }
     }
     
@@ -204,7 +204,7 @@
 
   EventsConstructor.prototype.unlisten = function(_event) {
     this.getRootElement().removeEventListener( _event, this[_event] );
-    this[_event].__unlistened__ = 1;
+    this[_event].__unlistened__ = true;
     
     return this;
   };
@@ -246,7 +246,7 @@
   };
 
   EventsConstructor.prototype.isUnlistened = function() {
-      return this.__unlistened__ || 0;
+      return this.__unlistened__ || false;
   };
 
   // Events.* has no way of knowing the `__root__'
