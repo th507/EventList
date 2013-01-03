@@ -5,7 +5,6 @@
 
 /*global extract:true, newArray:true, setProperty:true, elementHasClass:true */
 
-
 (function(root, name) {
   "use strict";
   // in case we decide to change those names later on
@@ -34,7 +33,7 @@
 
 
   // constructor for delegates method object/array
-  function delegatesConstructor(arr) {
+  function DelegatesConstructor(arr) {
     /*jshint validthis:true */
     this.disabled = false;
     this.delegates = newArray( arr );
@@ -47,11 +46,11 @@
    * better not subclassing JavaScript Array
    * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
    */
-  delegatesConstructor.prototype.disable = function(item) {
+  DelegatesConstructor.prototype.disable = function(item) {
     changeState( this.delegates, item, true );
   };
 
-  delegatesConstructor.prototype.enable = function(item) {
+  DelegatesConstructor.prototype.enable = function(item) {
     changeState( this.delegates, item, false );
   };
 
@@ -69,7 +68,7 @@
    *
    * @param evt
    */
-  delegatesConstructor.prototype.handleEvent = function(evt) {
+  DelegatesConstructor.prototype.handleEvent = function(evt) {
     // master switch
     if ( this.disabled || this.delegates.length === 0 ) {
       return;
@@ -152,7 +151,7 @@
    *
    * @param arr
    */
-  delegatesConstructor.prototype.listen = function(arr) {
+  DelegatesConstructor.prototype.listen = function(arr) {
     this.delegates = this.delegates || [];
     // better than [].concat
     // because concat will create a new array
@@ -164,19 +163,21 @@
     }
   };
 
-  delegatesConstructor.prototype.unlisten = function() {
+  DelegatesConstructor.prototype.unlisten = function() {
     this.getRootElement().removeEventListener( this.__event__, this );
     this.__unlistened__ = 1;
   };
-  delegatesConstructor.prototype.isUnlistened = function() {
+  DelegatesConstructor.prototype.isUnlistened = function() {
       return this.__unlistened__ || 0;
   };
 
 
   // constructor for event delegate Center
   function EventsConstructor(element) {
+    /* this is only mute jshint warning */
+    /*global jQuery:true*/
     // if `element' is a jQuery object
-    if ( "jQuery" in window && element instanceof window["jQuery"]) {
+    if ( "jQuery" in window && element instanceof jQuery ) {
       element = element[0];
     }
     
@@ -210,9 +211,9 @@
 
     // singleton for every event
     if ( !this.hasOwnProperty( _event ) ) {
-      this[_event] = new delegatesConstructor( extract( arguments, 1 ) );
+      this[_event] = new DelegatesConstructor( extract( arguments, 1 ) );
       // until we have a better solution, we'll have to contaminate all object
-      // created by delegatesConstructor
+      // created by DelegatesConstructor
       setProperty( this[_event], "__root__", this.getRootElement() );
       setProperty( this[_event], "__event__", _event );
 
@@ -275,7 +276,7 @@
   // Events.* has no way of knowing the `__root__'
   // we have to delay this prototype function declaration
   // to dismiss `EventsConstructor' not found error
-  delegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
+  DelegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
 
 
 
