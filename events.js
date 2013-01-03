@@ -175,6 +175,22 @@
 
   // constructor for event delegate Center
   function EventsConstructor(element) {
+    // if `element' is a jQuery object
+    if ( "jQuery" in window && element instanceof window["jQuery"]) {
+      element = element[0];
+    }
+    
+    // if `element' is a string
+    // we do not have to use getTypeOf
+    // typeof seems to be enough
+    if ( typeof element === "string" ) {
+      if ( "querySelector" in document ) {
+        if ( !( element = document.querySelector( element ) ) ) {
+          throw new TypeError( "Unable to parse element: type mismatch or querySelector method not found." );
+        }
+      }
+    }
+
     setProperty( this, "__root__", element || document );
  
     // for lesser browser
