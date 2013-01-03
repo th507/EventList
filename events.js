@@ -3,7 +3,7 @@
  * requires config.js
  * */
 
-/*global extract:true, newArray:true, setProperty:true, elementFitsDescription:true */
+/*global extract:true, setProperty:true, elementFitsDescription:true */
 
 (function(root, name) {
   "use strict";
@@ -47,7 +47,7 @@
   function DelegatesConstructor(arr) {
     /*jshint validthis:true */
     this.disabled = false;
-    this.delegates = newArray( arr );
+    this.delegates = arr || [];
 
     // allow overwrite
     setProperty( this, "__unlistened__", 0, true );
@@ -121,11 +121,11 @@
    *
    * @param arr
    */
-  DelegatesConstructor.prototype.listen = function(arr) {
+  DelegatesConstructor.prototype.listen = function() {
     this.delegates = this.delegates || [];
     // better than [].concat
     // because concat will create a new array
-    Array.prototype.push.apply( this.delegates, newArray( arr ) );
+    Array.prototype.push.apply( this.delegates, arguments );
 
     if ( this.__unlistened__ === 1 ) {
       this.getRootElement().addEventListener( this.__event__, this );
