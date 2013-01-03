@@ -61,48 +61,23 @@ function elementCanBeDescribedAs(el, selector) {
     return false;
   }
 
-  var _tagName, _className, pos,
-      selectorFirstCharRemoved = selector.charAt( 0 );
-
-  switch ( selectorFirstCharRemoved ) {
-    case "#" :
-      if ( "#" + el.id === selector ) {
-        return el;
-      }
-      break;
-    case "." :
-      // so we do not have to consider whether the className is the first or the last
-      if ( elementHasClass( el, selectorFirstCharRemoved ) ) {
-        return el;
-      }
-      break;
-    default :
-      pos = selector.indexOf( "." );
-      // tagName.className
-      // now we know that "." will not be the leading character
-      if ( ~pos ) {
-        _tagName = selector;
-        _className = _tagName.splice( 0, pos + 1 );
-        _tagName = _tagName.slice( 0 , -1 );
-        if ( ( el.tagName.toLowerCase() === _tagName ) && elementHasClass( el, _className ) ) {
-          return el;
-        }
-      }
-      // tagName
-      else {
-        // apparently `#' will not be at 0
-        if ( selector.indexOf( "#" ) > 0 ) {
-          throw new Error( selector + "not supported, use #id instead." );
-        }
-        else {
-          if ( el.tagName.toLowerCase() === selector ) {
-            return el;
-          }
-        }
-      }
-      // end of default branch
+  if ( "querySelector" in document ) {
+    // even if element has more than one way to present
+    // it will still return true
+    // e.g.
+    // document.getElementsByTagName("div")[1] ===
+    // document.querySelector("#login-status-header")
+    if ( document.querySelector( selector ) === el ) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
-  return null;
+  else {
+    throw new Error( "Browser not supported. Unable to use querySelector method." );
+  }
+  return false;
 }
 
 /**
