@@ -98,11 +98,10 @@
       return;
     }
 
-    var i, item, targetElement = getEventTarget(evt),
-        delegateArray = this.delegates;
+    var i, item, targetElement = getEventTarget(evt);
 
 
-    for ( i = 0; item = delegateArray[i]; i++ ) {
+    for ( i = 0; item = this.delegates[i]; i++ ) {
       if ( item.disabled || !item[delegateFunction] ) {
         continue;
       }
