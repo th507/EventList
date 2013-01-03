@@ -81,17 +81,13 @@
 
 
     for ( i = 0; item = delegateArray[i]; i++ ) {
-      if ( item.disabled ) {
+      if ( item.disabled || !item[delegateFunction] ) {
         continue;
       }
-
-      console.log( item[delegateSelector] );
-      console.warn( !!elementCanBeDescribedAs( targetElement, item[delegateSelector] ) );
 
       if ( elementCanBeDescribedAs( targetElement, item[delegateSelector] ) ) {
         execute( item[delegateFunction], targetElement );
       }
-
     } // end of for loop
   };
 
@@ -229,9 +225,6 @@
   // we have to delay this prototype function declaration
   // to dismiss `EventsConstructor' not found error
   DelegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
-
-
-
 
   // in case we need multiple instances
   root[name] = EventsConstructor;
