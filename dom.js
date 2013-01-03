@@ -53,7 +53,7 @@ function elementHasClass(el, _className) {
  * @param el
  * @param selector
  */
-function elementCanBeDescribedAs(el, selector) {
+function elementFitsDescription(el, selector) {
   if ( !selector ) {
     return false;
   }

@@ -3,7 +3,7 @@
  * requires config.js
  * */
 
-/*global extract:true, newArray:true, setProperty:true, elementCanBeDescribedAs:true */
+/*global extract:true, newArray:true, setProperty:true, elementFitsDescription:true */
 
 (function(root, name) {
   "use strict";
@@ -85,7 +85,7 @@
         continue;
       }
 
-      if ( elementCanBeDescribedAs( targetElement, item[delegateSelector] ) ) {
+      if ( elementFitsDescription( targetElement, item[delegateSelector] ) ) {
         execute( item[delegateFunction], targetElement );
       }
     } // end of for loop
