@@ -211,11 +211,15 @@
         this.__unlistened__ = 0;
       }
     }
+    
+    return this;
   };
 
   EventsConstructor.prototype.unlisten = function(_event) {
     this.getRootElement().removeEventListener( _event, this[_event] );
     this[_event].__unlistened__ = 1;
+    
+    return this;
   };
 
   // TODO: do we need this iterator?
