@@ -82,8 +82,7 @@ function elementFitsDescription(el, selector) {
       // now we know that "." will not be the leading character
       if ( ~pos ) {
         _tagName = selector;
-        _className = _tagName.splice( 0, pos + 1 );
-        _tagName = _tagName.slice( 0 , -1 );
+        _className = _tagName.splice( 0, pos ).substring( 1 );
         if ( ( el.tagName.toLowerCase() === _tagName ) && elementHasClass( el, _className ) ) {
           return el;
         }
