@@ -3,7 +3,7 @@
  * requires config.js
  * */
 
-/*global extract:true, newArray:true, setProperty:true, elementHasClass:true */
+/*global extract:true, newArray:true, setProperty:true, elementCanBeDescribedAs:true */
 
 (function(root, name) {
   "use strict";
@@ -75,7 +75,7 @@
     }
 
 
-    var delegateElement, i, item, _tagName, _className, pos,
+    var i, item, _tagName, _className, pos,
         targetElement = getEventTarget(evt),
         delegateArray = this.delegates;
 
@@ -85,58 +85,14 @@
         continue;
       }
 
-      delegateElement = item[delegateSelector];
+      console.log( item[delegateSelector] );
+      console.warn( !!elementCanBeDescribedAs( targetElement, item[delegateSelector] ) );
 
-      /*
-       * support 4 selectors:
-       * 1.  #id
-       * 2.  .className
-       * 3.  tagName
-       * 4.  tagName.className
-       */
-      switch ( delegateElement.charAt( 0 ) ) {
-        // #id
-        case "#" :
-          if ( "#" + targetElement.id === delegateElement ) {
-            execute( item[delegateFunction], targetElement );
-          }
-          break;
-          // .className
-        case "." :
-          // so we do not have to consider whether the className is the first or the last
-          if ( elementHasClass( targetElement, delegateElement.slice( 0 ) ) ) {
-            execute( item[delegateFunction], targetElement );
-          }
-          break;
-          // tagName and/or tagName.className
-          // only takes in a single class
-        default :
-          pos = delegateElement.indexOf( "." );
-          // tagName.className
-          // now we know that "." will not be the leading character
-          if ( ~pos ) {
-            _tagName = delegateElement;
-            _className = _tagName.splice( 0, pos + 1 );
-            _tagName = _tagName.slice( 0 , -1 );
-            if ( ( targetElement.tagName.toLowerCase() === _tagName ) && elementHasClass( targetElement, _className ) ) {
-              execute( item[delegateFunction], targetElement );
-            }
-          }
-          // tagName
-          else {
-            // apparently `#' will not be at 0
-            if ( delegateElement.indexOf( "#" ) > 0 ) {
-              throw new Error( delegateElement + "not supported, use #id instead." );
-            }
-            else {
-              if ( targetElement.tagName.toLowerCase() === delegateElement ) {
-                execute( item[delegateFunction], targetElement );
-              }
-            }
-          }
-          // end of default branch
-      } // end of switch
-    } // end of for
+      if ( elementCanBeDescribedAs( targetElement, item[delegateSelector] ) ) {
+        execute( item[delegateFunction], targetElement );
+      }
+
+    } // end of for loop
   };
 
   /**
