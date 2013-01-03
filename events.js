@@ -32,7 +32,18 @@
   }
 
 
-  // constructor for delegates method object/array
+  /**
+   * @name DelegatesConstructor
+   * @function
+   *
+   * @description
+   * constructor for delegates method object/array
+   * create a object simular to array
+   * better not subclassing JavaScript Array
+   * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
+   *
+   * @param arr
+   */
   function DelegatesConstructor(arr) {
     /*jshint validthis:true */
     this.disabled = false;
@@ -42,16 +53,29 @@
     setProperty( this, "__unlistened__", 0, true );
   }
 
-  /* create a object simular to array
-   * better not subclassing JavaScript Array
-   * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
+  /*
+   * we do not use this.disable to modify the master disable switch
+   * because user might accidentally calls this method without giving an argument
+   * for that circumstance, we should do nothing
+   * instead, we use disableAll to modify the master disable switch
    */
   DelegatesConstructor.prototype.disable = function(item) {
-    changeState( this.delegates, item, true );
+    if ( item ) {
+      changeState( this.delegates, item, true );
+    }
+    return this;
   };
 
   DelegatesConstructor.prototype.enable = function(item) {
-    changeState( this.delegates, item, false );
+    if ( item ) {
+      changeState( this.delegates, item, false );
+    }
+    return this;
+  };
+
+  DelegatesConstructor.prototype.disableAll = function() {
+    this.disabled = true;
+    return this;
   };
 
   /**
@@ -74,9 +98,7 @@
       return;
     }
 
-
-    var i, item, _tagName, _className, pos,
-        targetElement = getEventTarget(evt),
+    var i, item, targetElement = getEventTarget(evt),
         delegateArray = this.delegates;
 
 
@@ -185,6 +207,12 @@
     this[_event].__unlistened__ = 1;
     
     return this;
+  };
+
+  EventsConstructor.prototype.disable = function(_event) {
+    if ( this[_event] ) {
+      this[_event].disabled = true;
+    }
   };
 
   // TODO: do we need this iterator?
