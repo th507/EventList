@@ -1,13 +1,14 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
-/*global features:true, ActiveXObject:true */
+/*jshint unused:false, boss:true */
+/*global console:true, features:true, ActiveXObject:true */
 
 
 // find unique and not-empty item
 // http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/#comment-348025468
-Array.prototype.unique = function() {
-  return this.filter( function(value, key, arr) {
-    return value && ( key === arr.lastIndexOf( value ) );
-  } );
+Array.prototype.unique = function () {
+  return this.filter(function (value, key, arr) {
+    return value && (key === arr.lastIndexOf(value));
+  });
 };
 
 // find array difference
@@ -28,18 +29,18 @@ Array.prototype.unique = function() {
  * a.diff(b)              ->  [1]
  * a.diff(b, "exclude")   ->  [2]
  */
-Array.prototype.diff = function(arr, option) {
+Array.prototype.diff = function (arr, option) {
   // we do not want to put if inside filter
-  if ( !option ) {
-    return this.filter( function(i) {
-      return ~arr.indexOf( i );
-    } );
+  if (!option) {
+    return this.filter(function (i) {
+      return ~arr.indexOf(i);
+    });
   }
 
-  if ( option === "exclude" ) {
-    return this.filter( function(i) {
+  if (option === "exclude") {
+    return this.filter(function (i) {
       return !~arr.indexOf(i);
-    } );
+    });
   }
 };
 
@@ -57,7 +58,7 @@ Array.prototype.diff = function(arr, option) {
  * @param obj {Object/Function/whatever}
  */
 function getTypeOf(obj) {
-  return Object.prototype.toString.call( obj ).slice( 8, -1 );
+  return Object.prototype.toString.call(obj).slice(8, -1);
 }
 
 /**
@@ -76,7 +77,7 @@ function getTypeOf(obj) {
  * @param position {integer}
  */
 function extract(_arguments, position) {
-  return [].slice.call( _arguments, position || 0 );
+  return [].slice.call(_arguments, position || 0);
 }
 
 
@@ -89,7 +90,7 @@ function extract(_arguments, position) {
  * @param arr
  */
 function makeArray(arr) {
-  if ( getTypeOf( arr ) === "Array" ) {
+  if (getTypeOf(arr) === "Array") {
     return arr;
   }
   else {
@@ -120,19 +121,19 @@ function makeArray(arr) {
  * @param
  */
 function newArray() {
-  if ( arguments.length === 0 ) {
+  if (arguments.length === 0) {
     return [];
   }
-  if ( arguments.length === 1 ) {
+  if (arguments.length === 1) {
     // if only arguments length is 1, simply makes it an array
     // else reduces Arguments into Array (typeof is different)
 
-    return makeArray( arguments[0] );
+    return makeArray(arguments[0]);
   }
-  else{
+  else {
     // if we do not process arguments,
     // typeof will show `arguments` instead of `array`
-    return extract( arguments );
+    return extract(arguments);
   }
 }
 
@@ -147,28 +148,28 @@ function newArray() {
  * @param orginal (optional)
  */
 function appendArray(arr, orginal) {
-  if ( !orginal ) {
+  if (!orginal) {
     return arr;
   }
 
-  [].push.apply( orginal, arr );
+  [].push.apply(orginal, arr);
 
   return orginal;
 }
 
 // polyfilling Date.now
-if( getTypeOf( Date.now ) !== 'Function' ) {
+if (getTypeOf(Date.now) !== 'Function') {
   // lease efficient way to polyfill Date.now
   // but again, we do not put much optimization in legacy browsers
-  Date.now = function() { return +new Date(); };
+  Date.now = function () { return +new Date(); };
 }
 
 // polyfilling hasOwnProperty
 // https://gist.github.com/332357
-if ( !Object.prototype.hasOwnProperty ) {
-  Object.prototype.hasOwnProperty = function(prop) {
+if (!Object.prototype.hasOwnProperty) {
+  Object.prototype.hasOwnProperty = function (prop) {
     var proto = this.prototype || this.constructor.prototype;
-    return ( prop in this ) && ( !( prop in proto ) || proto[prop] !== this[prop] );
+    return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
   };
 }
 
@@ -186,10 +187,10 @@ if ( !Object.prototype.hasOwnProperty ) {
  * @param val {String/Object/Function/Array}
  */
 function setProperty(obj, key, val, writableFlag) {
-  if ( Object.hasOwnProperty( "defineProperty" ) ) {
-    Object.defineProperty( obj, key, { value: val,
-                                       writable : writableFlag || false
-    } );
+  if (Object.hasOwnProperty("defineProperty")) {
+    Object.defineProperty(obj, key, { value: val,
+                                      writable : writableFlag || false
+    });
   }
   else {
     obj[key] = val;
@@ -198,7 +199,7 @@ function setProperty(obj, key, val, writableFlag) {
 
 
 // so we can kill various log in a single stroke
-var konsole = 'console' in window ? console : function() {};
+var konsole = 'console' in window ? console : function () {};
 
 
 /**
@@ -209,7 +210,7 @@ var konsole = 'console' in window ? console : function() {};
  *
  * @param
  */
-var unifiedStorage = (function(){
+var unifiedStorage = (function () {
   /**
    * @name storeInSQL
    *
@@ -217,52 +218,52 @@ var unifiedStorage = (function(){
    *
    * @param
    */
-  var storeInSQL = function() {};
+  var storeInSQL = function () {};
 
   return {
-    clear : function() {
-      if ( features && features.incognito ) {
+    clear : function () {
+      if (features && features.incognito) {
         return false;
       }
-      konsole.info( "Purging LSStore." );
+      konsole.info("Purging LSStore.");
       localStorage.clear();
       return false;
     },
-    read: function() {
-      if ( features && features.incognito ) {
+    read: function () {
+      if (features && features.incognito) {
         return null;
       }
-      var key = ( arguments.length === 1 ) ? arguments[0] : arguments;
+      var key = (arguments.length === 1) ? arguments[0] : arguments;
 
-      if ( getTypeOf( key ) === "String" ) {
-        return localStorage.getItem( key ) || null;
+      if (getTypeOf(key) === "String") {
+        return localStorage.getItem(key) || null;
       }
       else {
-        if ( key.length === 1 ) {
+        if (key.length === 1) {
           key = key[0];
         }
-        for ( var LSContent = {}, item, i = 0; item = key[i]; i++ ) {
-          LSContent[item] = localStorage.getItem( item ) || null;
+        for (var LSContent = {}, item, i = 0; item = key[i]; i++) {
+          LSContent[item] = localStorage.getItem(item) || null;
         }
         return LSContent;
       }
     },
-    store: function(key, value) {
-      if ( features && features.incognito ) {
+    store: function (key, value) {
+      if (features && features.incognito) {
         return;
       }
 
-      if ( key && localStorage.getItem(key) ) {
-        localStorage.removeItem( key );
+      if (key && localStorage.getItem(key)) {
+        localStorage.removeItem(key);
         if (!value) {
           return;
         }
       }
-      localStorage.setItem( key, value );
-      konsole.info( "LSStore: " + key + "." );
+      localStorage.setItem(key, value);
+      konsole.info("LSStore: " + key + ".");
     },
-    SQL: function(_callback, FORCE_REFRESH) { // needs to migrate from refresh_cache.js TOFIX
-      return storeInSQL( _callback, FORCE_REFRESH );
+    SQL: function (_callback, FORCE_REFRESH) { // needs to migrate from refresh_cache.js TOFIX
+      return storeInSQL(_callback, FORCE_REFRESH);
     }
   };
 }());
@@ -278,51 +279,51 @@ var unifiedStorage = (function(){
  * @param _callback
  * @param option
  */
-var ftcXHR = function(src, _callback, option) {
-  if ( getTypeOf( _callback ) === "Object" ) {
+var ftcXHR = function (src, _callback, option) {
+  if (getTypeOf(_callback) === "Object") {
     option = _callback;
     _callback = option.callback;
   }
   option          = option || {};
   option.async    = option.async || true;
   option.context  = option.context || null;
-  option.method   = ( option.method || "" ) .toUpperCase() || "GET";
+  option.method   = (option.method || "").toUpperCase() || "GET";
 
   var xhr;
 
-  if ( "XMLHttpRequest" in window ) {
+  if ("XMLHttpRequest" in window) {
     xhr = new XMLHttpRequest();
   }
-  else if ( "ActiveXObject" in window ) {
-    xhr = new ActiveXObject( "Microsoft.XMLHTTP" );
+  else if ("ActiveXObject" in window) {
+    xhr = new ActiveXObject("Microsoft.XMLHTTP");
   }
   else {
-    throw new Error( "Unable to create HTTPRequest" );
+    throw new Error("Unable to create HTTPRequest");
   }
 
   // passing parameters to XMLHttpRequest’s onreadystatechange function
   // http://whacked.net/2007/11/27/passing-parameters-to-xmlhttprequests-onreadystatechange-function/
-  xhr.onreadystatechange = function(context) {
-    return function() {
-      if ( this.readyState !== 4 ) {
+  xhr.onreadystatechange = function (context) {
+    return function () {
+      if (this.readyState !== 4) {
         return;
       }
       // FIXME
       // maybe we should look out for other status code
-      if ( this.status === 200 ) {
-        _callback.call( context, xhr.responseText );
+      if (this.status === 200) {
+        _callback.call(context, xhr.responseText);
       }
     };
   }(option.context);
 
-  xhr.open( "GET", src, false );
-  xhr.send( null );
+  xhr.open("GET", src, false);
+  xhr.send(null);
 
-  if ( option.error ) {
-    xhr.onerror = function() { option.error.call( option.context );};
+  if (option.error) {
+    xhr.onerror = function () { option.error.call(option.context); };
   }
-  if ( option.load ) {
-    xhr.onload = function(){ option.load.call( option.context, xhr.responseText ); };
+  if (option.load) {
+    xhr.onload = function () { option.load.call(option.context, xhr.responseText); };
   }
 
   return;

@@ -1,4 +1,5 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
+/*jshint unused:false, boss:true */
 
 
 /**
@@ -7,7 +8,7 @@
  * @param el
  */
 function ___(el) {
-  return document.getElementById( el );
+  return document.getElementById(el);
 }
 
 
@@ -23,18 +24,18 @@ function ___(el) {
 function elementHasClass(el, _className) {
   // has to do this check first because if _className is not present
   // and el is absence as well, it should not return true
-  if ( !el ) {
-    throw new Error( "elementHasClass failed becase element is undefined" );
+  if (!el) {
+    throw new Error("elementHasClass failed becase element is undefined");
   }
-  if ( !_className ) {
+  if (!_className) {
     return true;
   }
-  if ( !el.className ) {
+  if (!el.className) {
     return false;
   }
 
   // so that we do not have to make special case for the 1st / last item
-  return ( new RegExp( "\\b" + _className + "\\b" ).test( el.className ) );
+  return (new RegExp("\\b" + _className + "\\b").test(el.className));
 }
 
 
@@ -54,52 +55,52 @@ function elementHasClass(el, _className) {
  * @param selector
  */
 function elementFitsDescription(el, selector) {
-  if ( !selector ) {
+  if (!selector) {
     return false;
   }
-  if ( !el ) {
+  if (!el) {
     return false;
   }
 
   var _tagName, _className, pos,
-      selectorFirstCharRemoved = selector.charAt( 0 );
+      selectorFirstCharRemoved = selector.charAt(0);
 
-  switch ( selectorFirstCharRemoved ) {
-    case "#" :
-      if ( "#" + el.id === selector ) {
+  switch (selectorFirstCharRemoved) {
+  case "#" :
+    if ("#" + el.id === selector) {
+      return el;
+    }
+    break;
+  case "." :
+    // so we do not have to consider whether the className is the first or the last
+    if (elementHasClass(el, selectorFirstCharRemoved)) {
+      return el;
+    }
+    break;
+  default :
+    pos = selector.indexOf(".");
+    // tagName.className
+    // now we know that "." will not be the leading character
+    if (~pos) {
+      _tagName = selector;
+      _className = _tagName.splice(0, pos).substring(1);
+      if ((el.tagName.toLowerCase() === _tagName) && elementHasClass(el, _className)) {
         return el;
       }
-      break;
-    case "." :
-      // so we do not have to consider whether the className is the first or the last
-      if ( elementHasClass( el, selectorFirstCharRemoved ) ) {
-        return el;
+    }
+    // tagName
+    else {
+      // apparently `#' will not be at 0
+      if (selector.indexOf("#") > 0) {
+        throw new Error(selector + "not supported, use #id instead.");
       }
-      break;
-    default :
-      pos = selector.indexOf( "." );
-      // tagName.className
-      // now we know that "." will not be the leading character
-      if ( ~pos ) {
-        _tagName = selector;
-        _className = _tagName.splice( 0, pos ).substring( 1 );
-        if ( ( el.tagName.toLowerCase() === _tagName ) && elementHasClass( el, _className ) ) {
+      else {
+        if (el.tagName.toLowerCase() === selector) {
           return el;
         }
       }
-      // tagName
-      else {
-        // apparently `#' will not be at 0
-        if ( selector.indexOf( "#" ) > 0 ) {
-          throw new Error( selector + "not supported, use #id instead." );
-        }
-        else {
-          if ( el.tagName.toLowerCase() === selector ) {
-            return el;
-          }
-        }
-      }
-      // end of default branch
+    }
+    // end of default branch
   }
   return null;
 }
@@ -121,19 +122,19 @@ function elementFitsDescription(el, selector) {
  * }
  */
 function manipulateClass(el, option) {
-  if ( !el || !option || typeof option !== "object" ) {
+  if (!el || !option || typeof option !== "object") {
     return;
   }
 
-  if ( ( option.add && typeof option.add !== "string" ) ||
-       ( option.remove && typeof option.remove !== "string" ) ) {
-    throw new TypeError( "Parameters malformed." + option.toString() +
-                         " should be object of string" );
+  if ((option.add && typeof option.add !== "string") ||
+       (option.remove && typeof option.remove !== "string")) {
+    throw new TypeError("Parameters malformed." + option.toString() +
+                        " should be object of string");
   }
   var  _classNameArray, _className = el.className;
 
-  if ( !_className ) {
-    if ( option.add ) {
+  if (!_className) {
+    if (option.add) {
       el.className = option.add;
       return;
     }
@@ -141,21 +142,21 @@ function manipulateClass(el, option) {
     return;
   }
   
-  if ( Object.prototype.hasOwnProperty.call( document.body, "classList" ) ) {
+  if (Object.prototype.hasOwnProperty.call(document.body, "classList")) {
     // classList is not unique
-    _classNameArray = Array.prototype.unique.call( el.classList );
+    _classNameArray = [].unique.call(el.classList);
   }
   else {
-    _classNameArray = _className.split( " " ).unique();
+    _classNameArray = _className.split(" ").unique();
   }
 
-  if ( option.remove ) {
-    var classToRemove = option.remove.split( " " );
-    _classNameArray = Array.prototype.diff.call( _classNameArray, classToRemove );
+  if (option.remove) {
+    var classToRemove = option.remove.split(" ");
+    _classNameArray = [].diff.call(_classNameArray, classToRemove);
   }
-  if ( option.add ) {
+  if (option.add) {
     // in case there is duplicate
-    var classToAdd = option.add.split( " " );
+    var classToAdd = option.add.split(" ");
 
     // remove duplicates and join two arraries
     // `classToAdd.diff' remove what is already in original array
@@ -163,9 +164,9 @@ function manipulateClass(el, option) {
     // only `push' does not create new array
     // so in theory, push might be slightly faster
     // and we do not want a new array anyway
-    Array.prototype.push.apply( _classNameArray, classToAdd.diff( _classNameArray, "exclude" ) );
+    [].push.apply(_classNameArray, classToAdd.diff(_classNameArray, "exclude"));
   }
-  _className = _classNameArray.join( " " );
+  _className = _classNameArray.join(" ");
   el.className = _className;
   return;
 }
@@ -179,8 +180,8 @@ function manipulateClass(el, option) {
  * @param state
  */
 function toggleElement(el, state) {
-  if ( !___( el ) ) {
+  if (!___(el)) {
     return;
   }
-  return ___( el ).style.display = state ? state : "none";
+  return ___(el).style.display = state ? state : "none";
 }
