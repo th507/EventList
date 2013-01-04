@@ -179,6 +179,10 @@ function manipulateClass(el, option) {
     [].push.apply(_classNameArray, toAdd.diff(_classNameArray));
   }
   el.className = _classNameArray.join(" ");
+  _classNameArray = null;
+  _className = null;
+  toAdd = null;
+  toRemove = null;
   return;
 }
 
