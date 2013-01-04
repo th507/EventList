@@ -85,7 +85,7 @@
    * @description
    * actual function to attach events
    * we all know that we could bind object in addEventListener
-   * http://www.w3.org/TR/DOM-Level-2-Events/events.html#Events-EventListener-handleEvent
+   * http://w3.org/TR/DOM-Level-2-Events/events.html
    * provided there is a `handleEvent' property in the object
    * but the trick is that we COULD use a function to generate an object with
    * `handleEvent' nicely hidden inside its `prototype'
