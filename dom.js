@@ -1,6 +1,6 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 /*jshint unused:false, boss:true */
-
+/*global DOMTokenList:true */
 
 /**
  * @description
@@ -62,10 +62,9 @@ function elementFitsDescription(el, selector) {
     return false;
   }
 
-  var _tagName, _className, pos,
-      selectorFirstCharRemoved = selector.charAt(0);
+  var _tagName, _className, pos;
 
-  switch (selectorFirstCharRemoved) {
+  switch (selector.charAt(0)) {
   case "#" :
     if ("#" + el.id === selector) {
       return el;
@@ -73,7 +72,7 @@ function elementFitsDescription(el, selector) {
     break;
   case "." :
     // so we do not have to consider whether the className is the first or the last
-    if (elementHasClass(el, selectorFirstCharRemoved)) {
+    if (elementHasClass(el, selector.substring(1))) {
       return el;
     }
     break;
@@ -117,8 +116,8 @@ function elementFitsDescription(el, selector) {
  * @param option
  * parameters:
  * {
- *    add   : STRING (must be unique)
- *    remove: STRING (must be unique)
+ *    add   : STRING/ARRAY (must be unique)
+ *    remove: STRING/ARRAY (must be unique)
  * }
  */
 function manipulateClass(el, option) {
@@ -126,11 +125,35 @@ function manipulateClass(el, option) {
     return;
   }
 
-  if ((option.add && typeof option.add !== "string") ||
-       (option.remove && typeof option.remove !== "string")) {
-    throw new TypeError("Parameters malformed." + option.toString() +
-                        " should be object of string");
+  var toAdd = [], toRemove = [];
+  if (option.add) {
+    if (typeof option.add === "string") {
+      toAdd = option.add.split(/\s+/).unique();
+    }
+    else if (typeof option.add === "array") {
+      toAdd = option.add;
+    }
   }
+  if (option.remove) {
+    if (typeof option.remove === "string") {
+      toRemove = option.remove.split(/\s+/).unique();
+    }
+    if (typeof option.remove === "array") {
+      toRemove = option.remove;
+    }
+  }
+
+
+  if ("classList" in document.body && "DOMTokenList" in window) {
+    if (toRemove.length) {
+      DOMTokenList.prototype.remove.apply(el.classList, toRemove);
+    }
+    if (toAdd.length) {
+      DOMTokenList.prototype.add.apply(el.classList, toAdd);
+    }
+    return;
+  }
+
   var  _classNameArray, _className = el.className;
 
   if (!_className) {
@@ -141,29 +164,21 @@ function manipulateClass(el, option) {
     // nothing else to do
     return;
   }
-  console.log(_className);
   
   // FIXME: use classList as much as possible
   _classNameArray = _className.split(/\s+/).unique();
 
   if (option.remove) {
-    var classToRemove = option.remove.split(" ");
-    _classNameArray = _classNameArray.diff(classToRemove);
+    _classNameArray = _classNameArray.diff(toRemove);
   }
   if (option.add) {
     // in case there is duplicate
     var classToAdd = option.add.split(" ");
 
     // remove duplicates and join two arraries
-    // `classToAdd.diff' remove what is already in original array
-    // `push.apply' equals to a.concat(b)
-    // only `push' does not create new array
-    // so in theory, push might be slightly faster
-    // and we do not want a new array anyway
-    [].push.apply(_classNameArray, classToAdd.diff(_classNameArray));
+    [].push.apply(_classNameArray, toAdd.diff(_classNameArray));
   }
-  _className = _classNameArray.join(" ");
-  el.className = _className;
+  el.className = _classNameArray.join(" ");
   return;
 }
 
