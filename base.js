@@ -21,23 +21,23 @@ Array.prototype.unique = function () {
  * @example
  * a = [1, 2]
  * b = [3, 4, 5]
- * a.diff(b)              ->  []
- * a.diff(b, "exclude")   ->  [1, 2]
+ * a.diff(b, "common")    ->  []
+ * a.diff(b)              ->  [1, 2]
  *
  * a = [1, 2]
  * b = [1, 3, 4, 5]
- * a.diff(b)              ->  [1]
- * a.diff(b, "exclude")   ->  [2]
+ * a.diff(b, "common")    ->  [1]
+ * a.diff(b)              ->  [2]
  */
 Array.prototype.diff = function (arr, option) {
   // we do not want to put if inside filter
-  if (!option) {
+  if (option === "common") {
     return this.filter(function (i) {
       return ~arr.indexOf(i);
     });
   }
 
-  if (option === "exclude") {
+  if (!option || option === "exclude") {
     return this.filter(function (i) {
       return !~arr.indexOf(i);
     });
