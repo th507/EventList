@@ -141,7 +141,7 @@
 
   DelegatesConstructor.prototype.unlisten = function() {
     this.getRootElement().removeEventListener( this.__event__, this );
-    this.__unlistened__ = 1;
+    this.__unlistened__ = true;
   };
   DelegatesConstructor.prototype.isUnlistened = function() {
     return this.__unlistened__ || false;
