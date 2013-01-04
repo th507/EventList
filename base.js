@@ -279,7 +279,7 @@ var unifiedStorage = (function () {
  * @param _callback
  * @param option
  */
-var ftcXHR = function (src, _callback, option) {
+function ftcXHR(src, _callback, option) {
   if (getTypeOf(_callback) === "Object") {
     option = _callback;
     _callback = option.callback;
@@ -303,7 +303,7 @@ var ftcXHR = function (src, _callback, option) {
 
   // passing parameters to XMLHttpRequest’s onreadystatechange function
   // http://whacked.net/2007/11/27/passing-parameters-to-xmlhttprequests-onreadystatechange-function/
-  xhr.onreadystatechange = function (context) {
+  xhr.onreadystatechange = (function (context) {
     return function () {
       if (this.readyState !== 4) {
         return;
@@ -314,7 +314,7 @@ var ftcXHR = function (src, _callback, option) {
         _callback.call(context, xhr.responseText);
       }
     };
-  }(option.context);
+  }(option.context));
 
   xhr.open("GET", src, false);
   xhr.send(null);
@@ -327,4 +327,5 @@ var ftcXHR = function (src, _callback, option) {
   }
 
   return;
-};
+}
+var ___xhr = ftcXHR;
