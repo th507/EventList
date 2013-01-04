@@ -141,18 +141,14 @@ function manipulateClass(el, option) {
     // nothing else to do
     return;
   }
+  console.log(_className);
   
-  if (Object.prototype.hasOwnProperty.call(document.body, "classList")) {
-    // classList is not unique
-    _classNameArray = [].unique.call(el.classList);
-  }
-  else {
-    _classNameArray = _className.split(" ").unique();
-  }
+  // FIXME: use classList as much as possible
+  _classNameArray = _className.split(/\s+/).unique();
 
   if (option.remove) {
     var classToRemove = option.remove.split(" ");
-    _classNameArray = [].diff.call(_classNameArray, classToRemove);
+    _classNameArray = _classNameArray.diff(classToRemove);
   }
   if (option.add) {
     // in case there is duplicate
@@ -164,7 +160,7 @@ function manipulateClass(el, option) {
     // only `push' does not create new array
     // so in theory, push might be slightly faster
     // and we do not want a new array anyway
-    [].push.apply(_classNameArray, classToAdd.diff(_classNameArray, "exclude"));
+    [].push.apply(_classNameArray, classToAdd.diff(_classNameArray));
   }
   _className = _classNameArray.join(" ");
   el.className = _className;
