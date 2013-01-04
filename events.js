@@ -163,7 +163,7 @@
     if ( typeof element === "string" ) {
       if ( "querySelector" in document ) {
         if ( !( element = document.querySelector( element ) ) ) {
-          throw new TypeError( "Unable to parse element: type mismatch or querySelector method not found." );
+          throw new TypeError( "Unable to parse element: unexpected response from querySelector." );
         }
       }
     }
