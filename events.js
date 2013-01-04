@@ -28,7 +28,9 @@
   }
 
   function execute(func, scope) {
-    func.call( scope );
+    if ( func ) {
+      func.call( scope );
+    }
   }
 
 
@@ -78,6 +80,11 @@
     return this;
   };
 
+  DelegatesConstructor.prototype.enableAll = function() {
+    this.disabled = false;
+    return this;
+  };
+
   /**
    * @name handleEvent
    * @function
@@ -102,7 +109,7 @@
 
 
     for ( i = 0; item = this.delegates[i]; i++ ) {
-      if ( item.disabled || !item[delegateFunction] ) {
+      if ( item.disabled ) {
         continue;
       }
 
