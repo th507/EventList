@@ -62,3 +62,4 @@ var ftcCookie = (function () {
   };
 }());
 
+window.ftcCookie = ftcCookie;
