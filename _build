@@ -1,4 +1,4 @@
 #! /bin/bash
 #set -ex
 cd ~/Dropbox/www/modules
-cat featuresDetector.js fundamentals.js dom.js cookies.js lib/script.min.js > build/ftcBase.js
+cat featuresDetector.js base.js dom.js cookies.js lib/script.min.js > build/ftcBase.js
