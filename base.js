@@ -328,4 +328,4 @@ function ftcXHR(src, _callback, option) {
 
   return;
 }
-var ___xhr = ftcXHR;
+var ___xhr = window.ftcXHR = ftcXHR;
