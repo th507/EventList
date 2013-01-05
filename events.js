@@ -34,7 +34,7 @@
 
 
   /**
-   * @name DelegatesConstructor
+   * @name DelegateList
    * @function
    *
    * @description
@@ -45,7 +45,7 @@
    *
    * @param arr
    */
-  function DelegatesConstructor(arr) {
+  function DelegateList(arr) {
     /*jshint validthis:true */
     this.disabled = false;
     this.delegates = arr || [];
@@ -60,26 +60,26 @@
    * for that circumstance, we should do nothing
    * instead, we use disableAll to modify the master disable switch
    */
-  DelegatesConstructor.prototype.disable = function (item) {
+  DelegateList.prototype.disable = function (item) {
     if (item) {
       changeState(this.delegates, item, true);
     }
     return this;
   };
 
-  DelegatesConstructor.prototype.enable = function (item) {
+  DelegateList.prototype.enable = function (item) {
     if (item) {
       changeState(this.delegates, item, false);
     }
     return this;
   };
 
-  DelegatesConstructor.prototype.disableAll = function () {
+  DelegateList.prototype.disableAll = function () {
     this.disabled = true;
     return this;
   };
 
-  DelegatesConstructor.prototype.enableAll = function () {
+  DelegateList.prototype.enableAll = function () {
     this.disabled = false;
     return this;
   };
@@ -98,7 +98,7 @@
    *
    * @param evt
    */
-  DelegatesConstructor.prototype.handleEvent = function (evt) {
+  DelegateList.prototype.handleEvent = function (evt) {
     // master switch
     if (this.disabled || this.delegates.length === 0) {
       return;
@@ -126,7 +126,7 @@
    *
    * @param arr
    */
-  DelegatesConstructor.prototype.listen = function () {
+  DelegateList.prototype.listen = function () {
     this.delegates = this.delegates || [];
     // better than [].concat
     // because concat will create a new array
@@ -138,43 +138,70 @@
     }
   };
 
-  DelegatesConstructor.prototype.unlisten = function () {
+  DelegateList.prototype.unlisten = function () {
     this.getRootElement().removeEventListener(this.__event__, this);
     this.__unlistened__ = true;
   };
-  DelegatesConstructor.prototype.isUnlistened = function () {
+  DelegateList.prototype.isUnlistened = function () {
     return this.__unlistened__ || false;
   };
 
 
   // constructor for event delegate Center
-  function EventsConstructor(element) {
-    /* this is only mute jshint warning */
-    /*global jQuery:true*/
-    // if `element' is a jQuery object
-    if ("jQuery" in window && element instanceof jQuery) {
-      element = element[0];
+  function EventList(element, registeredName) {
+    var selectorString = null;
+    if (!element) {
+      element = document;
+      selectorString = "document";
     }
-    
-    // if `element' is a string
-    // we do not have to use getTypeOf
-    // typeof seems to be enough
-    if (typeof element === "string") {
-      if ("querySelector" in document) {
-        if (!(element = document.querySelector(element))) {
-          throw new TypeError("Unable to parse element: unexpected response from querySelector.");
+    else {
+      /* this is only mute jshint warning */
+      /*global jQuery:true*/
+      // if `element' is a jQuery object
+      if ("jQuery" in window && element instanceof jQuery) {
+        selectorString = element.selector;
+        element = element[0];
+      }
+      
+      // if `element' is a string
+      // we do not have to use getTypeOf
+      // typeof seems to be enough
+      else if (typeof element === "string") {
+        if ("querySelector" in document) {
+          selectorString = element;
+          if (!(element = document.querySelector(selectorString))) {
+            throw new TypeError("Unable to parse element: unexpected response from querySelector.");
+          }
         }
       }
     }
 
-    setProperty(this, "__root__", element || document);
- 
-    // for lesser browser
-    // always check for `__' prefix in for-in loop
+    setProperty(this, "__root__", element);
+
+    // record every instance's variable name (if possible)
+    // By the hidden info, we could make each new EventList a singleton
+    // if we re-instantiated EventList, it will return proper object
+    root[name].__registerElements__ = root[name].__registerElements__ || {};
+    
+    var _previousElements = root[name].__registerElements__;
+
+    if (_previousElements[selectorString]) {
+      if (window[_previousElements[selectorString]]) {
+        return window[_previousElements[selectorString]];
+      }
+    }
+
+    if (registeredName) {
+      if (!selectorString) {
+        // or maybe we should warn and continue
+        throw new Error("Unable to bind to " + registeredName);
+      }
+      root[name].__registerElements__[selectorString] = registeredName;
+    }
   }
 
   // focus and blur does NOT bubble up
-  EventsConstructor.prototype.listen = function () {
+  EventList.prototype.listen = function () {
     if (!arguments.length) {
       return;
     }
@@ -186,9 +213,9 @@
 
     // singleton for every event
     if (!this.hasOwnProperty(_event)) {
-      this[_event] = new DelegatesConstructor(extract(arguments, 1));
+      this[_event] = new DelegateList(extract(arguments, 1));
       // until we have a better solution, we'll have to contaminate all object
-      // created by DelegatesConstructor
+      // created by DelegateList
       setProperty(this[_event], "__root__", this.getRootElement());
       setProperty(this[_event], "__event__", _event);
 
@@ -207,21 +234,24 @@
     return this;
   };
 
-  EventsConstructor.prototype.unlisten = function (_event) {
+  EventList.prototype.unlisten = function (_event) {
     this.getRootElement().removeEventListener(_event, this[_event]);
     this[_event].__unlistened__ = true;
     
     return this;
   };
 
-  EventsConstructor.prototype.disable = function (_event) {
+  EventList.prototype.disable = function (_event) {
     if (this[_event]) {
       this[_event].disabled = true;
     }
   };
 
+
+  // for lesser browser
+  // always check for `__' prefix in for-in loop
   // TODO: do we need this iterator?
-  EventsConstructor.prototype.loop = function (_callback) {
+  EventList.prototype.loop = function (_callback) {
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
     var key, value;
@@ -241,7 +271,7 @@
     }
   };
 
-  EventsConstructor.prototype.getRootElement = function () {
+  EventList.prototype.getRootElement = function () {
     if (this.__root__) {
       return this.__root__;
     }
@@ -250,15 +280,15 @@
     }
   };
 
-  EventsConstructor.prototype.isUnlistened = function () {
+  EventList.prototype.isUnlistened = function () {
     return this.__unlistened__ || false;
   };
 
   // Events.* has no way of knowing the `__root__'
   // we have to delay this prototype function declaration
-  // to dismiss `EventsConstructor' not found error
-  DelegatesConstructor.prototype.getRootElement = EventsConstructor.prototype.getRootElement;
+  // to dismiss `EventList' not found error
+  DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
 
   // in case we need multiple instances
-  root[name] = EventsConstructor;
-}(this, "EventsConstructor"));
+  root[name] = EventList;
+}(this, "EventList"));
