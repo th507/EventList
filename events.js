@@ -190,7 +190,7 @@
     }
     else if (registeredVariable) {
       root[name].__registered__[element] = { "variable" : registeredVariable,
-                                             "scope"    : scope || window
+                                             "scope"    : scope || root
                                            };
     }
 
