@@ -214,8 +214,9 @@
     }
 
     // singleton for every event
+    var delegateArray = extract(arguments, 1);
     if (!_self.hasOwnProperty(_event)) {
-      _self[_event] = new DelegateList(extract(arguments, 1));
+      _self[_event] = new DelegateList(delegateArray);
       // until we have a better solution, we'll have to contaminate all object
       // created by DelegateList
       setProperty(_self[_event], "__root__", _self.getRootElement());
@@ -225,13 +226,15 @@
       _self.getRootElement().addEventListener(_event, _self[_event]);
     }
     else {
-      _self[_event].listen(extract(arguments, 1));
+      _self[_event].listen(delegateArray);
 
       if (_self[_event].isUnlistened) {
         _self.getRootElement().addEventListener(_event, _self[_event]);
         _self.__unlistened__ = false;
       }
     }
+    delegateArray = null;
+
     return _self;
   };
 
@@ -283,7 +286,7 @@
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
-    _callback = _callback || function (key, value) { console.log(key); };
+    _callback = _callback || function (key) { console.log(key); };
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
