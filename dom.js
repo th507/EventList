@@ -1,6 +1,6 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 /*jshint unused:false, boss:true */
-/*global DOMTokenList:true */
+/*global DOMTokenList:true, features:true */
 
 /**
  * @description
@@ -143,8 +143,9 @@ function manipulateClass(el, option) {
     }
   }
 
-
-  if ("classList" in document.body && "DOMTokenList" in window) {
+  // Firefox has a bug in classList
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=826973
+  if ("classList" in document.body && "DOMTokenList" in window && !features.firefox) {
     if (toRemove.length) {
       DOMTokenList.prototype.remove.apply(el.classList, toRemove);
     }
