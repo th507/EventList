@@ -168,6 +168,14 @@
       if ("jQuery" in window && element instanceof jQuery) {
         selectorString = element.selector;
         element = element[0];
+        // jQuery.selector return "" for $(document), $(document.body)
+        // so we have to do some extra check
+        if (jQuery(document)[0] === element) {
+          selectorString = "document";
+        }
+        else if (jQuery("body")[0] === element) {
+          selectorString = "body";
+        }
       }
       
       // if `element' is a string
