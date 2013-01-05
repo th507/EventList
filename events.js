@@ -150,7 +150,7 @@
   // constructor for event delegate Center
   function EventList(element, registeredVariable, scope) {
     var selectorString = null;
-    if (!element) {
+    if (!element || element === document) {
       element = document;
       selectorString = "document";
     }
@@ -176,30 +176,39 @@
       }
     }
 
+
     // record every instance's variable name (if possible)
     // By the hidden info, we could make each new EventList a singleton
     // if we re-instantiated EventList, it will return proper object
     root[name].__registered__ = root[name].__registered__ || {};
     
     var _previousInstance;
-    if (_previousInstance = root[name].__registered__[element]) {
+    if (_previousInstance = root[name].__registered__[selectorString]) {
       if ((_previousInstance.scope)[_previousInstance.variable]) {
         return (_previousInstance.scope)[_previousInstance.variable];
       }
       _previousInstance = null;
     }
     else if (registeredVariable) {
-      root[name].__registered__[element] = { "variable" : registeredVariable,
-                                             "scope"    : scope || root
-                                           };
+      // Object key must be string
+      // or must have identical value when toString is called
+      // http://www.hacksparrow.com/object-as-javascript-objects-key.html
+      root[name].__registered__[selectorString] =
+                                          { "variable"  : registeredVariable,
+                                            "scope"     : scope || root
+                                          };
     }
 
     setProperty(this, "__root__", element);
+
+    if (selectorString) {
+      setProperty(this, "__rootSelector__", selectorString);
+    }
   }
 
   // focus and blur does NOT bubble up
   EventList.prototype.listen = function () {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
@@ -241,7 +250,7 @@
   // only add a flag not to listen and removeEventListener
   // does NOT remove the EventList item
   EventList.prototype.unlisten = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
@@ -254,7 +263,7 @@
 
   // only safe way to remove EventList item
   EventList.prototype.remove = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
@@ -266,7 +275,7 @@
   };
 
   EventList.prototype.disable = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
@@ -282,7 +291,7 @@
   // always check for `__' prefix in for-in loop
   // TODO: do we need this iterator?
   EventList.prototype.loop = function (_callback) {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
@@ -317,8 +326,19 @@
     }
   };
 
+  EventList.prototype.getRootElementSelector = function () {
+    // we do not use _self for safety reasons
+    if (this.__rootSelector__) {
+      return this.__rootSelector__;
+    }
+    else {
+      // cannot throw error
+      return null;
+    }
+  };
+
   EventList.prototype.isUnlistened = function () {
-    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
     
