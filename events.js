@@ -181,10 +181,10 @@
     // if we re-instantiated EventList, it will return proper object
     root[name].__registered__ = root[name].__registered__ || {};
     
-    var _previous = root[name].__registered__;
-    if (_previous[element]) {
-      if ((_previous[element].scope)[_previous[element].variable]) {
-        return (_previous[element].scope)[_previous[element].variable];
+    var _previousInstance;
+    if (_previousInstance = root[name].__registered__[element]) {
+      if ((_previousInstance.scope)[_previousInstance.variable]) {
+        return (_previousInstance.scope)[_previousInstance.variable];
       }
     }
     else if (registeredVariable) {
@@ -197,7 +197,10 @@
 
   // focus and blur does NOT bubble up
   EventList.prototype.listen = function () {
-    var _self = (root[name].__registered__[this.getRootElement()].scope)[root[name].__registered__[this.getRootElement()].variable] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
+
 
     if (!arguments.length) {
       return _self;
@@ -230,8 +233,13 @@
     return _self;
   };
 
+  // only add a flag not to listen and removeEventListener
+  // does NOT remove the EventList item
   EventList.prototype.unlisten = function (_event) {
-    var _self = (root[name].__registered__[this.getRootElement()].scope)[root[name].__registered__[this.getRootElement()].variable] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
+
 
     _self.getRootElement().removeEventListener(_event, _self[_event]);
     _self[_event].__unlistened__ = true;
@@ -239,8 +247,12 @@
     return _self;
   };
 
+  // only safe way to remove EventList item
   EventList.prototype.remove = function (_event) {
-    var _self = (root[name].__registered__[this.getRootElement()].scope)[root[name].__registered__[this.getRootElement()].variable] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
+
     
     _self.unlisten(_event);
     delete _self[_event];
@@ -249,7 +261,10 @@
   };
 
   EventList.prototype.disable = function (_event) {
-    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
+
     
     if (this[_event]) {
       this[_event].disabled = true;
@@ -262,7 +277,9 @@
   // always check for `__' prefix in for-in loop
   // TODO: do we need this iterator?
   EventList.prototype.loop = function (_callback) {
-    var _self = (root[name].__registered__[this.getRootElement()].scope)[root[name].__registered__[this.getRootElement()].variable] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
@@ -294,7 +311,9 @@
   };
 
   EventList.prototype.isUnlistened = function () {
-    var _self = (root[name].__registered__[this.getRootElement()].scope)[root[name].__registered__[this.getRootElement()].variable] || this;
+    var _previousInstance = root[name].__registered__[this.getRootElement()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
+    _previousInstance = null;
     
     return _self.__unlistened__ || false;
   };
