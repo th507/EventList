@@ -30,10 +30,14 @@ function elementHasClass(el, _className) {
   if (!_className) {
     return true;
   }
+
+  if ("classList" in document.body && "DOMTokenList") {
+    return el.classList.contains(_className);
+  }
+
   if (!el.className) {
     return false;
   }
-
   // so that we do not have to make special case for the 1st / last item
   return (new RegExp("\\b" + _className + "\\b").test(el.className));
 }
@@ -143,15 +147,12 @@ function manipulateClass(el, option) {
     }
   }
 
-  // Firefox has a bug in classList
+  // Firefox and Opera has a bug in classList (or should I say feature?)
   // https://bugzilla.mozilla.org/show_bug.cgi?id=826973
-  if ("classList" in document.body && "DOMTokenList" in window && !features.firefox) {
-    if (toRemove.length) {
-      DOMTokenList.prototype.remove.apply(el.classList, toRemove);
-    }
-    if (toAdd.length) {
-      DOMTokenList.prototype.add.apply(el.classList, toAdd);
-    }
+  // so we cannot use DOMTokenList.prototype.remove.apply(el.classList, toRemove);
+  if ("classList" in document.body && Array.prototype.hasOwnProperty("map")) {
+    toRemove.map(function(item) {el.classList.remove(item);});
+    toAdd.map(function(item) {el.classList.add(item);});
     return;
   }
 
