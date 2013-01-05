@@ -151,8 +151,8 @@ function manipulateClass(el, option) {
   // https://bugzilla.mozilla.org/show_bug.cgi?id=826973
   // so we cannot use DOMTokenList.prototype.remove.apply(el.classList, toRemove);
   if ("classList" in document.body && Array.prototype.hasOwnProperty("map")) {
-    toRemove.map(function(item) {el.classList.remove(item);});
-    toAdd.map(function(item) {el.classList.add(item);});
+    toRemove.map(function (item) {el.classList.remove(item); });
+    toAdd.map(function (item) {el.classList.add(item); });
     return;
   }
 

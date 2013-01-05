@@ -186,10 +186,12 @@
       if ((_previousInstance.scope)[_previousInstance.variable]) {
         return (_previousInstance.scope)[_previousInstance.variable];
       }
+      _previousInstance = null;
     }
     else if (registeredVariable) {
       root[name].__registered__[element] = { "variable" : registeredVariable,
-                                             "scope"    : scope || window };
+                                             "scope"    : scope || window
+                                           };
     }
 
     setProperty(this, "__root__", element);
@@ -281,7 +283,7 @@
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
 
-    _callback = _callback || function (key, value) { console.log(key)};
+    _callback = _callback || function (key, value) { console.log(key); };
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype

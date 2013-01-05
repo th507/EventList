@@ -1,6 +1,6 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 /*jshint unused:false, boss:true */
-/*global console:true, features:true, ActiveXObject:true */
+/*global console:true, features:true */
 
 
 // find unique and not-empty item

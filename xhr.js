@@ -1,3 +1,5 @@
+/*jshint unused:false */
+/*global ActiveXObject:true */
 /**
  * @name ftcXHR
  * @function
@@ -10,8 +12,8 @@
  * @param option
  */
 function ftcXHR(src, _callback, option) {
-  if (getTypeOf(_callback) === "Object") {
-    option = _callback;
+  if (typeof _callback === "object") {
+    option    = _callback;
     _callback = option.callback;
   }
   option          = option || {};
