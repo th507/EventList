@@ -280,11 +280,13 @@
     var _previousInstance = root[name].__registered__[this.getRootElement()];
     var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
     _previousInstance = null;
+
+    _callback = _callback || function (key, value) { console.log(key)};
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
     var key, value;
-    if (Object.prototype.hasOwnProperty.call(_self.prototype, "propertyIsEnumerable")) {
+    if ("propertyIsEnumerable" in _self) {
       for (key in _self) {
         if (_self.hasOwnProperty(key)) {
           _callback.call(_self, key, value);
@@ -327,4 +329,4 @@
   root[name] = EventList;
 }(this, "EventList"));
 // test
-//var a = new EventList("body","a");a.x=1;var b = new EventList("body");
+//var a = new EventList("body","a"); a.x=1; var b = new EventList("body");
