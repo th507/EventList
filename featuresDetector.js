@@ -42,12 +42,13 @@ features.webapp = (function () {
   if (~location.search.indexOf("webapp")) {
     return true;
   }
-  
+  /*
   if (features.ios) {
     if (!~navigator.userAgent.indexOf("Safari")) {
       return true;
     }
   }
+  */
 }());
 
 // debug mode
