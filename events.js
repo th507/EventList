@@ -176,34 +176,30 @@
       }
     }
 
-    setProperty(this, "__root__", element);
-
     // record every instance's variable name (if possible)
     // By the hidden info, we could make each new EventList a singleton
     // if we re-instantiated EventList, it will return proper object
     root[name].__registerElements__ = root[name].__registerElements__ || {};
     
     var _previousElements = root[name].__registerElements__;
-
-    if (_previousElements[selectorString]) {
-      if (window[_previousElements[selectorString]]) {
-        return window[_previousElements[selectorString]];
+    if (_previousElements[element]) {
+      if (window[_previousElements[element]]) {
+        return window[_previousElements[element]];
       }
     }
-
-    if (registeredName) {
-      if (!selectorString) {
-        // or maybe we should warn and continue
-        throw new Error("Unable to bind to " + registeredName);
-      }
-      root[name].__registerElements__[selectorString] = registeredName;
+    else if (registeredName) {
+      root[name].__registerElements__[element] = registeredName;
     }
+
+    setProperty(this, "__root__", element);    
   }
 
   // focus and blur does NOT bubble up
   EventList.prototype.listen = function () {
+    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+
     if (!arguments.length) {
-      return;
+      return _self;
     }
     var _event = arguments[0];
 
@@ -212,39 +208,43 @@
     }
 
     // singleton for every event
-    if (!this.hasOwnProperty(_event)) {
-      this[_event] = new DelegateList(extract(arguments, 1));
+    if (!_self.hasOwnProperty(_event)) {
+      _self[_event] = new DelegateList(extract(arguments, 1));
       // until we have a better solution, we'll have to contaminate all object
       // created by DelegateList
-      setProperty(this[_event], "__root__", this.getRootElement());
-      setProperty(this[_event], "__event__", _event);
+      setProperty(_self[_event], "__root__", _self.getRootElement());
+      setProperty(_self[_event], "__event__", _event);
 
 
-      this.getRootElement().addEventListener(_event, this[_event]);
+      _self.getRootElement().addEventListener(_event, _self[_event]);
     }
     else {
-      this[_event].listen(extract(arguments, 1));
+      _self[_event].listen(extract(arguments, 1));
 
-      if (this[_event].isUnlistened) {
-        this.getRootElement().addEventListener(_event, this[_event]);
-        this.__unlistened__ = false;
+      if (_self[_event].isUnlistened) {
+        _self.getRootElement().addEventListener(_event, _self[_event]);
+        _self.__unlistened__ = false;
       }
     }
-    
-    return this;
+    return _self;
   };
 
   EventList.prototype.unlisten = function (_event) {
-    this.getRootElement().removeEventListener(_event, this[_event]);
-    this[_event].__unlistened__ = true;
+    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+
+    _self.getRootElement().removeEventListener(_event, _self[_event]);
+    _self[_event].__unlistened__ = true;
     
-    return this;
+    return _self;
   };
 
   EventList.prototype.disable = function (_event) {
+    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+    
     if (this[_event]) {
       this[_event].disabled = true;
     }
+    return _self;
   };
 
 
@@ -252,26 +252,29 @@
   // always check for `__' prefix in for-in loop
   // TODO: do we need this iterator?
   EventList.prototype.loop = function (_callback) {
+    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+    
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
     var key, value;
-    if (Object.prototype.hasOwnProperty.call(this.prototype, "propertyIsEnumerable")) {
-      for (key in this) {
-        if (this.hasOwnProperty(key)) {
-          _callback.call(this, key, value);
+    if (Object.prototype.hasOwnProperty.call(_self.prototype, "propertyIsEnumerable")) {
+      for (key in _self) {
+        if (_self.hasOwnProperty(key)) {
+          _callback.call(_self, key, value);
         }
       }
     }
     else {
-      for (key in this) {
+      for (key in _self) {
         if (key !== "prototype" && ~key.indexOf("__")) {
-          _callback.call(this, key, value);
+          _callback.call(_self, key, value);
         }
       }
     }
   };
 
   EventList.prototype.getRootElement = function () {
+    // we do not use _self for safety reasons
     if (this.__root__) {
       return this.__root__;
     }
@@ -281,7 +284,9 @@
   };
 
   EventList.prototype.isUnlistened = function () {
-    return this.__unlistened__ || false;
+    var _self = window[root[name].__registerElements__[this.getRootElement()]] || this;
+    
+    return _self.__unlistened__ || false;
   };
 
   // Events.* has no way of knowing the `__root__'
@@ -292,3 +297,5 @@
   // in case we need multiple instances
   root[name] = EventList;
 }(this, "EventList"));
+// test
+var a = new EventList("body","a");a.x=1;var b = new EventList("body");
