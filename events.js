@@ -32,6 +32,13 @@
     }
   }
 
+  function setEnv(scope) {
+    var _previousInstance = scope.constructor.__registered__[scope.getRootElementSelector()];
+    var _self = (_previousInstance.scope)[_previousInstance.variable] || scope;
+    _previousInstance = null;
+    return _self;
+  }
+
 
   /**
    * @name DelegateList
@@ -180,10 +187,11 @@
     // record every instance's variable name (if possible)
     // By the hidden info, we could make each new EventList a singleton
     // if we re-instantiated EventList, it will return proper object
-    root[name].__registered__ = root[name].__registered__ || {};
+    this.constructor.__registered__ = this.constructor.__registered__ || {};
     
-    var _previousInstance;
-    if (_previousInstance = root[name].__registered__[selectorString]) {
+    var _previousInstance = this.constructor.__registered__[selectorString];
+    // FIXME compare __root__ for better matching
+    if (_previousInstance) {
       if ((_previousInstance.scope)[_previousInstance.variable]) {
         return (_previousInstance.scope)[_previousInstance.variable];
       }
@@ -193,7 +201,7 @@
       // Object key must be string
       // or must have identical value when toString is called
       // http://www.hacksparrow.com/object-as-javascript-objects-key.html
-      root[name].__registered__[selectorString] =
+      this.constructor.__registered__[selectorString] =
                                           { "variable"  : registeredVariable,
                                             "scope"     : scope || root
                                           };
@@ -208,10 +216,7 @@
 
   // focus and blur does NOT bubble up
   EventList.prototype.listen = function () {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
-
+    var _self = setEnv(this);
 
     if (!arguments.length) {
       return _self;
@@ -250,10 +255,7 @@
   // only add a flag not to listen and removeEventListener
   // does NOT remove the EventList item
   EventList.prototype.unlisten = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
-
+    var _self = setEnv(this);
 
     _self.getRootElement().removeEventListener(_event, _self[_event]);
     _self[_event].__unlistened__ = true;
@@ -263,10 +265,7 @@
 
   // only safe way to remove EventList item
   EventList.prototype.remove = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
-
+    var _self = setEnv(this);
     
     _self.unlisten(_event);
     delete _self[_event];
@@ -275,10 +274,7 @@
   };
 
   EventList.prototype.disable = function (_event) {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
-
+    var _self = setEnv(this);
     
     if (this[_event]) {
       this[_event].disabled = true;
@@ -291,9 +287,7 @@
   // always check for `__' prefix in for-in loop
   // TODO: do we need this iterator?
   EventList.prototype.loop = function (_callback) {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
+    var _self = setEnv(this);
 
     _callback = _callback || function (key) { console.log(key); };
     
@@ -302,7 +296,7 @@
     var key, value;
     if ("propertyIsEnumerable" in _self) {
       for (key in _self) {
-        if (_self.hasOwnProperty(key)) {
+        if (_self.hasOwnProperty(key) && _self[key].constructor.name === "DelegateList") {
           _callback.call(_self, key, value);
         }
       }
@@ -338,9 +332,7 @@
   };
 
   EventList.prototype.isUnlistened = function () {
-    var _previousInstance = root[name].__registered__[this.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || this;
-    _previousInstance = null;
+    var _self = setEnv(this);
     
     return _self.__unlistened__ || false;
   };
