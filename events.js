@@ -280,13 +280,13 @@
       setProperty(_self[_event], "__root__", _self.getRootElement());
       setProperty(_self[_event], "__event__", _event);
 
-      addEventListenerHelper(_self.getRootElement().addEventListener, _event, _self[_event]);       }
+      addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);       }
     else {
       _self[_event].listen(delegateArray);
 
       if (_self[_event].isUnlistened) {
         //_self.getRootElement().addEventListener(_event, _self[_event]);
-        addEventListenerHelper(_self.getRootElement().addEventListener, _event, _self[_event]);
+        addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
         _self.__unlistened__ = false;
       }
     }
