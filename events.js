@@ -1,7 +1,7 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 
 /*jshint unused:false, boss:true */
-/*global extract:true, setProperty:true, elementFitsDescription:true */
+/*global setProperty:true, elementFitsDescription:true */
 
 
 (function (root, name) {
@@ -39,7 +39,6 @@
     return _self;
   }
 
-
   /**
    * @name DelegateList
    * @function
@@ -50,7 +49,7 @@
    * better not subclassing JavaScript Array
    * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
    *
-   * @param arr
+   * @param arr ARRAY
    */
   function DelegateList(arr) {
     /*jshint validthis:true */
@@ -137,8 +136,17 @@
     this.delegates = this.delegates || [];
     // better than [].concat
     // because concat will create a new array
-    [].push.apply(this.delegates, arguments);
-
+    if (arguments.length === 1 && typeof arguments[0] === "array") {
+      [].push.apply(this.delegates, arguments[0]);
+    }
+    else {
+      for (var i = 0, item; item = arguments[i]; i++) {
+        if (item.selector) {
+          this.delegates.push(item);
+        }
+      }
+    }
+    
     if (this.__unlistened__ === true) {
       this.getRootElement().addEventListener(this.__event__, this);
       this.__unlistened__ = false;
@@ -235,8 +243,20 @@
       throw new TypeError(_event + " unavailable.");
     }
 
+    var delegateArray;
+    if (arguments.length === 2 && typeof arguments[1] === "array") {
+      delegateArray = arguments[1];
+    }
+    else {
+      delegateArray = [];
+      for (var i = 1, item; item = arguments[i]; i++) {
+        if (item.selector) {
+          delegateArray.push(item);
+        }
+      }
+    }
+
     // singleton for every event
-    var delegateArray = extract(arguments, 1);
     if (!_self.hasOwnProperty(_event)) {
       _self[_event] = new DelegateList(delegateArray);
       // until we have a better solution, we'll have to contaminate all object
