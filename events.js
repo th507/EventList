@@ -39,6 +39,22 @@
     return _self;
   }
 
+  function pushIntoDelegates(toArr, fromArr, startPos) {
+    startPos = startPos || 0;
+    if (fromArr.length === startPos + 1 && typeof fromArr[startPos] === "array") {
+      [].push.apply(toArr, fromArr[startPos]);
+    }
+    else {
+      for (var i = startPos, item; item = fromArr[i]; i++) {
+        if (item.selector) {
+          toArr.push(item);
+        }
+      }
+    }
+    return toArr;
+  }
+
+
   /**
    * @name DelegateList
    * @function
@@ -99,7 +115,7 @@
    * we all know that we could bind object in addEventListener
    * http://w3.org/TR/DOM-Level-2-Events/events.html
    * provided there is a `handleEvent' property in the object
-   * but the trick is that we COULD use a function to generate an object with
+   * here is the trick, we COULD use a function to generate an object with
    * `handleEvent' nicely hidden inside its `prototype'
    *
    * @param evt
@@ -111,7 +127,6 @@
     }
 
     var i, item, targetElement = getEventTarget(evt);
-
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
@@ -134,18 +149,8 @@
    */
   DelegateList.prototype.listen = function () {
     this.delegates = this.delegates || [];
-    // better than [].concat
-    // because concat will create a new array
-    if (arguments.length === 1 && typeof arguments[0] === "array") {
-      [].push.apply(this.delegates, arguments[0]);
-    }
-    else {
-      for (var i = 0, item; item = arguments[i]; i++) {
-        if (item.selector) {
-          this.delegates.push(item);
-        }
-      }
-    }
+    // better than [].concat because concat will create a new array
+    this.delegates = pushIntoDelegates(this.delegates, arguments);
     
     if (this.__unlistened__ === true) {
       this.getRootElement().addEventListener(this.__event__, this);
@@ -243,18 +248,9 @@
       throw new TypeError(_event + " unavailable.");
     }
 
-    var delegateArray;
-    if (arguments.length === 2 && typeof arguments[1] === "array") {
-      delegateArray = arguments[1];
-    }
-    else {
-      delegateArray = [];
-      for (var i = 1, item; item = arguments[i]; i++) {
-        if (item.selector) {
-          delegateArray.push(item);
-        }
-      }
-    }
+    var delegateArray = [];
+    // skipping the first argument
+    delegateArray = pushIntoDelegates([], arguments, 1);
 
     // singleton for every event
     if (!_self.hasOwnProperty(_event)) {
