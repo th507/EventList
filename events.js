@@ -54,6 +54,23 @@
     return toArr;
   }
 
+  function addEventListenerHelper(element, _event, _obj) {
+    if (element.addEventListener) {
+      element.addEventListener(_event, _self[_event], false);
+    }
+    else if (element.attachEvent) {
+      element.attachEvent("on" + _event, _self[_event]);
+    }
+  }
+
+  function removeEventListenerHelper(element, _event, _obj) {
+    if (element.removeEventListener) {
+      element.removeEventListener(_event, _self[_event]);
+    }
+    else if (element.detachEvent) {
+      element.detachEvent("on" + _event, _self[_event]);
+    }
+  }
 
   /**
    * @name DelegateList
@@ -153,13 +170,13 @@
     this.delegates = pushIntoDelegates(this.delegates, arguments);
     
     if (this.__unlistened__ === true) {
-      this.getRootElement().addEventListener(this.__event__, this);
+      addEventListenerHelper(this.getRootElement(), this.__event__, this);
       this.__unlistened__ = false;
     }
   };
 
   DelegateList.prototype.unlisten = function () {
-    this.getRootElement().removeEventListener(this.__event__, this);
+    removeEventListenerHelper(this.getRootElement(), this.__event__, this);
     this.__unlistened__ = true;
   };
   DelegateList.prototype.isUnlistened = function () {
@@ -204,6 +221,9 @@
       }
     }
 
+    if (!element.addEventListener && !element.attachEvent) {
+      throw new Error("Unable to find addEventListener and attachEvent on Element" + _event);
+    }
 
     // record every instance's variable name (if possible)
     // By the hidden info, we could make each new EventList a singleton
@@ -244,7 +264,7 @@
     }
     var _event = arguments[0];
 
-    if (!Object.prototype.hasOwnProperty.call(document.documentElement, "on" + _event)) {
+    if (!Object.prototype.hasOwnProperty.call(document.body, "on" + _event)) {
       throw new TypeError(_event + " unavailable.");
     }
 
@@ -260,14 +280,13 @@
       setProperty(_self[_event], "__root__", _self.getRootElement());
       setProperty(_self[_event], "__event__", _event);
 
-
-      _self.getRootElement().addEventListener(_event, _self[_event]);
-    }
+      addEventListenerHelper(_self.getRootElement().addEventListener, _event, _self[_event]);       }
     else {
       _self[_event].listen(delegateArray);
 
       if (_self[_event].isUnlistened) {
-        _self.getRootElement().addEventListener(_event, _self[_event]);
+        //_self.getRootElement().addEventListener(_event, _self[_event]);
+        addEventListenerHelper(_self.getRootElement().addEventListener, _event, _self[_event]);
         _self.__unlistened__ = false;
       }
     }
@@ -281,7 +300,7 @@
   EventList.prototype.unlisten = function (_event) {
     var _self = setEnv(this);
 
-    _self.getRootElement().removeEventListener(_event, _self[_event]);
+    removeEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
     _self[_event].__unlistened__ = true;
     
     return _self;
