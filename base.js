@@ -90,7 +90,7 @@ function extract(_arguments, position) {
  * @param arr
  */
 function makeArray(arr) {
-  if (getTypeOf(arr) === "Array") {
+  if (typeof arr === "array") {
     return arr;
   }
   else {
