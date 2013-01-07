@@ -1,6 +1,6 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 /*jshint unused:false, boss:true */
-/*global DOMTokenList:true, features:true */
+/*global DOMTokenList:true */
 
 
 /**
