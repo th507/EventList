@@ -56,19 +56,19 @@
 
   function addEventListenerHelper(element, _event, _obj) {
     if (element.addEventListener) {
-      element.addEventListener(_event, _self[_event], false);
+      element.addEventListener(_event, _obj, false);
     }
     else if (element.attachEvent) {
-      element.attachEvent("on" + _event, _self[_event]);
+      element.attachEvent("on" + _event, _obj);
     }
   }
 
   function removeEventListenerHelper(element, _event, _obj) {
     if (element.removeEventListener) {
-      element.removeEventListener(_event, _self[_event]);
+      element.removeEventListener(_event, _obj);
     }
     else if (element.detachEvent) {
-      element.detachEvent("on" + _event, _self[_event]);
+      element.detachEvent("on" + _event, _obj);
     }
   }
 
@@ -149,7 +149,7 @@
       if (item.disabled) {
         continue;
       }
-
+      // FIXME: add documentation explaining why we use this instead of querySelector match
       if (elementFitsDescription(targetElement, item[delegateSelector])) {
         execute(item[delegateFunction], targetElement);
       }
@@ -222,7 +222,7 @@
     }
 
     if (!element.addEventListener && !element.attachEvent) {
-      throw new Error("Unable to find addEventListener and attachEvent on Element" + _event);
+      throw new Error("Unable to find addEventListener and attachEvent on element.");
     }
 
     // record every instance's variable name (if possible)
@@ -280,7 +280,8 @@
       setProperty(_self[_event], "__root__", _self.getRootElement());
       setProperty(_self[_event], "__event__", _event);
 
-      addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);       }
+      addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
+    }
     else {
       _self[_event].listen(delegateArray);
 
