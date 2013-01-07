@@ -1,6 +1,5 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 /*jshint unused:false, boss:true */
-/*global DOMTokenList:true */
 
 
 /**
@@ -22,7 +21,7 @@ function elementHasClass(el, _className) {
     return true;
   }
 
-  if ("classList" in document.body && "DOMTokenList") {
+  if ("classList" in document.body) {
     return el.classList.contains(_className);
   }
 
