@@ -33,25 +33,15 @@
   }
 
   function setEnv(scope) {
-    var _previousInstance = scope.constructor.__registered__[scope.getRootElementSelector()];
-    var _self = (_previousInstance.scope)[_previousInstance.variable] || scope;
-    _previousInstance = null;
-    return _self;
-  }
-
-  function pushIntoDelegates(toArr, fromArr, startPos) {
-    startPos = startPos || 0;
-    if (fromArr.length === startPos + 1 && typeof fromArr[startPos] === "array") {
-      [].push.apply(toArr, fromArr[startPos]);
+    var _self, _previousInstance = scope.constructor.__registered__[scope.getRootElementSelector()];
+    if (_previousInstance) {
+      _self = (_previousInstance.scope)[_previousInstance.variable] || scope;
     }
     else {
-      for (var i = startPos, item; item = fromArr[i]; i++) {
-        if (item.selector) {
-          toArr.push(item);
-        }
-      }
+      _self = scope;
     }
-    return toArr;
+    _previousInstance = null;
+    return _self;
   }
 
   function addEventListenerHelper(element, _event, _obj) {
@@ -87,6 +77,13 @@
   function DelegateList(arr) {
     /*jshint validthis:true */
     this.disabled = false;
+    if (arr) {
+      arr = arr.filter(function(i) {
+        if (i.hasOwnProperty(delegateSelector)) {
+          return true;
+        }
+      });
+    }
     this.delegates = arr || [];
 
     // allow overwrite
@@ -100,6 +97,7 @@
    * instead, we use disableAll to modify the master disable switch
    */
   DelegateList.prototype.disable = function (item) {
+    
     if (item) {
       changeState(this.delegates, item, true);
     }
@@ -165,9 +163,26 @@
    * @param arr
    */
   DelegateList.prototype.listen = function () {
+    // make arguments an array
+    var arr, i, item;
+    switch (arguments.length) {
+    case 0:
+      arr = [];
+      break;
+    case 1:
+      arr = arguments[0];
+      arr = (arr instanceof Array) ? arr : [arr];
+      break;
+    default:
+      arr = [].slice.call(arguments);
+    }
+
     this.delegates = this.delegates || [];
-    // better than [].concat because concat will create a new array
-    this.delegates = pushIntoDelegates(this.delegates, arguments);
+    for (i = 0; item = arr[i]; i++) {
+      if (item.hasOwnProperty(delegateSelector)) {
+        this.delegates.push(item);
+      }
+    }
     
     if (this.__unlistened__ === true) {
       addEventListenerHelper(this.getRootElement(), this.__event__, this);
@@ -185,9 +200,9 @@
 
 
   // constructor for event delegate Center
-  function EventList(element, registeredVariable, scope) {
+  function EventList(element, registeredVariable, variableScope) {
     var selectorString = null;
-    if (!element || element === document) {
+    if (!element || element === document || element === "document") {
       element = document;
       selectorString = "document";
     }
@@ -200,10 +215,10 @@
         element = element[0];
         // jQuery.selector return "" for $(document), $(document.body)
         // so we have to do some extra check
-        if (jQuery(document)[0] === element) {
+        if (element === document) {
           selectorString = "document";
         }
-        else if (jQuery("body")[0] === element) {
+        else if (element === document.body) {
           selectorString = "body";
         }
       }
@@ -219,8 +234,11 @@
           }
         }
       }
+      else if (element.length) {
+        element = element[0];
+      }
     }
-
+    
     if (!element.addEventListener && !element.attachEvent) {
       throw new Error("Unable to find addEventListener and attachEvent on element.");
     }
@@ -239,13 +257,16 @@
       _previousInstance = null;
     }
     else if (registeredVariable) {
+      variableScope = variableScope || root;
+      variableScope[registeredVariable] = this;
       // Object key must be string
       // or must have identical value when toString is called
       // http://www.hacksparrow.com/object-as-javascript-objects-key.html
       this.constructor.__registered__[selectorString] =
                                           { "variable"  : registeredVariable,
-                                            "scope"     : scope || root
+                                            "scope"     : variableScope
                                           };
+      
     }
 
     setProperty(this, "__root__", element);
@@ -264,17 +285,23 @@
     }
     var _event = arguments[0];
 
-    if (!Object.prototype.hasOwnProperty.call(document.body, "on" + _event)) {
+    if (!(("on" + _event) in document.body)) {
       throw new TypeError(_event + " unavailable.");
     }
 
-    var delegateArray = [];
-    // skipping the first argument
-    delegateArray = pushIntoDelegates([], arguments, 1);
+    var arr = [].slice.call(arguments, 1);
 
+    if (arr.length === 1) {
+      if (!arr[0]) {
+        arr = [];
+      }
+      else {
+        arr = (arr[0] instanceof Array) ? arr[0] : arr; 
+      }
+    }
     // singleton for every event
     if (!_self.hasOwnProperty(_event)) {
-      _self[_event] = new DelegateList(delegateArray);
+      _self[_event] = new DelegateList(arr);
       // until we have a better solution, we'll have to contaminate all object
       // created by DelegateList
       setProperty(_self[_event], "__root__", _self.getRootElement());
@@ -283,7 +310,7 @@
       addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
     }
     else {
-      _self[_event].listen(delegateArray);
+      _self[_event].listen(arr);
 
       if (_self[_event].isUnlistened) {
         //_self.getRootElement().addEventListener(_event, _self[_event]);
@@ -291,7 +318,7 @@
         _self.__unlistened__ = false;
       }
     }
-    delegateArray = null;
+    arr = null;
 
     return _self;
   };
@@ -325,6 +352,18 @@
     }
     return _self;
   };
+
+  EventList.prototype.enable = function (_event) {
+    var _self = setEnv(this);
+    
+    if (this[_event]) {
+      if (this[_event].disabled) {
+        this[_event].disabled = false;
+      }
+    }
+    return _self;
+  };
+
 
 
   // for lesser browser
@@ -389,5 +428,3 @@
   // in case we need multiple instances
   root[name] = EventList;
 }(this, "EventList"));
-// test
-//var a = new EventList("body","a"); a.x=1; var b = new EventList("body");
