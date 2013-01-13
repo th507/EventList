@@ -1,5 +1,5 @@
 # EventList
-EventList is a simple wrapper for event delegation. It is similar similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
+EventList is a (not so) simple wrapper for event delegation. It is similar similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
 
 ## Basic Usage (aka tl;dr)
 ### Initialization
@@ -59,6 +59,16 @@ This will call `foo.unlisten("click")`, then remove `foo.click` which holds all 
 
 # Documentation
 
+## Data Structure
+
+A typical `EventList` looks like this
+
+	EventList ---
+				|- eventType: delegateList
+				|- ...
+				\- eventType: delegateList
+				
+
 ## Initialization
 
 	var foo = new EventList(element[, singletonName, singletonScope])
@@ -67,11 +77,7 @@ Accepted types for `element`:
 
 * String[^string] as `querySelector` argument (Preferred),
 * jQuery element (may **NOT** support singleton creation), 
-* DOM Element[^element] (does **NOT** support singleton creation), 
-
-
-
-
+* DOM Element[^element] (does **NOT** support singleton creation)
 
 ## [](id:singleton)Initialization as a singleton
 
@@ -79,7 +85,7 @@ Pass in singleton variable name and variable scope when instantiating `EventList
 
 	var singletonName = new EventList(element, singletonName, singletonScope);
 	
-`element` **MUST** be a jQuery element or a string for singleton to work.
+`element` **MUST** be a string or a jQuery element for singleton to work.
 	
 `singletonName` should be the variable name at the left side of the `=`.
 
