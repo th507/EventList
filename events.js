@@ -372,7 +372,7 @@
   EventList.prototype.loop = function (_callback) {
     var _self = setEnv(this);
 
-    _callback = _callback || function (key) { console.log(key); };
+    _callback = _callback || function (key) {};
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
