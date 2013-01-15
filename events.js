@@ -3,7 +3,7 @@
 /*jshint unused:false, boss:true */
 /*global setProperty:true, elementFitsDescription:true */
 
-
+// you should polyfill hasOwnProperty if you are running on a lesser browser
 (function (root, name) {
   "use strict";
   // in case we decide to change those names later on
@@ -424,6 +424,28 @@
   // we have to delay this prototype function declaration
   // to dismiss `EventList' not found error
   DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
+
+  // destory one or all singletons
+  EventList.destorySingleton = EventList.prototype.destorySingleton = function() {
+    if (!EventList.__registered__) {
+      return this;
+    }
+
+    if (arguments.length === 0) {
+      delete EventList.__registered__;
+    }
+    else {
+      // only accept the first arguments at the moment
+      for (var i in EventList.__registered__) {
+        if (EventList.__registered__.hasOwnProperty(i)) {
+          if (arguments[0] === i) {
+            delete EventList.__registered__.i;
+            return this;
+          }
+        }
+      }
+    }
+  };
 
   // in case we need multiple instances
   root[name] = EventList;
