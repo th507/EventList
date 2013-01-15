@@ -21,6 +21,7 @@ footer {
     width: 100%;
     text-align: right;
     margin-right: 10%;
+    padding: 5px 0;
 }
 
 #test-field {
@@ -31,9 +32,9 @@ footer {
 }
 
 #result {
-    position: absolute;
+    position: fixed;
     bottom: 0;
-    background: black;
+    background: #3C94DC;
     color: white;
     height: 40px;
     line-height: 40px;
@@ -56,7 +57,7 @@ footer {
 </head>
 
 <body>
-<h2>EventList</h2>
+<h2>Basic Setup (click paragraph)</h2>
 <div id=test-field>
     <p>Morbi vel fermentum eros. Quisque tincidunt enim a odio faucibus malesuada. Cras faucibus risus ut tortor lobortis lacinia. Nam feugiat sollicitudin dolor, vel interdum nisl sagittis a. Duis et orci ac tortor feugiat bibendum. Phasellus ornare, mauris vitae venenatis placerat, neque turpis dignissim nulla, non ornare elit est ut nibh. Nullam faucibus tristique bibendum. Nullam id turpis ut est gravida adipiscing. Sed erat leo, aliquet vitae semper in, mollis a lacus. Suspendisse tempus molestie enim eget cursus.</p>
 
@@ -87,7 +88,7 @@ var evt = new EventList("#test-field");
 evt.listen("click", {
     selector: "p",
     handler: function () {
-        id("result").innerHTML = "The clicked paragraph begins with &#8220;" + this.innerHTML.substring(0, 10) + "&#8221;.";
+        id("result").innerHTML = "The clicked paragraph begins with &#8220; " + this.innerHTML.substring(0, 10) + " &#8221;.";
     }
 });
 </script>
