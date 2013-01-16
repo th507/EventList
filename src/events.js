@@ -44,11 +44,11 @@
    * @description execute function with scope
    * @param {func} func Function to be executed.
    * @param {scope} scope Scope where func gets executed in.
-   * @param {evt_info} additional information about current event.
+   * @param {delegates} DelegateList that holds current delegate.
    */
-  function execute(func, scope, evt_info) {
+  function execute(func, scope, delegates) {
     if (func) {
-      func.call(scope, evt_info);
+      func.call(scope, delegates);
     }
   }
 
@@ -142,6 +142,18 @@
 
     //return this;
   }
+
+  /**
+   * @DelegateList function
+   * @name DelegateList.getEventType
+   * @function
+   *
+   * @description Get eventType for this DelegateList.
+   * @returns {string} String denoting eventType for this DelegateList.
+   */
+  DelegateList.prototype.getEventType = function () {
+    return this.__event__ || "undefined";
+  };
 
   /**
    * @DelegateList function
@@ -251,10 +263,7 @@
       }
       // FIXME: add documentation explaining why we use this instead of querySelector match
       if (elementFitsDescription(targetElement, item[delegateSelector])) {
-        execute(item[delegateFunction], targetElement, {
-          rootElement: this.__root__,
-          eventType: this.__event__
-        });
+        execute(item[delegateFunction], targetElement, this);
       }
     } // end of for loop
   };
@@ -450,6 +459,7 @@
     // singleton for every event
     if (!_self.hasOwnProperty(_event)) {
       _self[_event] = new DelegateList(arr);
+      _self[_event].constructor.constructor = _self;
       // until we have a better solution, we'll have to contaminate all object
       // created by DelegateList
       setProperty(_self[_event], "__root__", _self.getRootElement());
