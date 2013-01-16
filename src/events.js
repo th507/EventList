@@ -78,8 +78,8 @@
    * @function
    *
    * @description A simple wrapper for addEventListener with attachEvent fallback
-   * @param {element} string String to be converted to uppercase.
-   * @param {_evnt} A string representing the event type to listen for.
+   * @param {element} string String denoting the rootElement.
+   * @param {_evnt} A string representing the eventType to listen for.
    * @param {_obj} Object that receives a notification when specified event occurs.
    *               see addEventListener on MDN for more details
    */
@@ -98,8 +98,8 @@
    * @function
    *
    * @description A simple wrapper for removeEventListener with dettachEvent fallback
-   * @param {element} string String to be converted to uppercase.
-   * @param {_evnt} A string representing the event type to listen for.
+   * @param {element} string String denoting the rootElement.
+   * @param {_evnt} A string representing the eventType to listen for.
    * @param {_obj} Object that receives a notification when specified event occurs.
    *               see addEventListener on MDN for more details
    */
@@ -115,7 +115,7 @@
 
   /**
    * @DelegateList constructor
-   * @name angular.uppercase
+   * @name DelegateList
    * @function
    *
    * @description Constructor for delegates method object/array.
@@ -128,7 +128,7 @@
     /*jshint validthis:true */
     this.disabled = false;
     if (arr) {
-      arr = arr.filter(function(i) {
+      arr = arr.filter(function (i) {
         if (i.hasOwnProperty(delegateSelector)) {
           return true;
         }
@@ -147,7 +147,16 @@
    * @name DelegateList.disable
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Disable a certain listener.
+   * BE WARNED: (about JavaScript object referencing)
+   * this methods suffers the same fortune/misfortune of JavaScript language,
+   * Objects are passing around by reference.
+   * So if you are to pass the same object to different eventType,
+   * DelegateList.disable/enable will disable all those objects
+   * We left this quirk here intentionally,
+   * because sometimes this is the preferred behavior.
+   * If you need to change this behavior, you should clone your object before
+   * sending them to the DelegateList.listen/EventList.listen
    * we do not use this.disable to modify the master disable switch
    * because user might accidentally calls this method without giving an argument
    * for that circumstance, we should do nothing
@@ -168,7 +177,9 @@
    * @name DelegateList.enable
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Enable a certain listener.
+   * BE WARNED: (about JavaScript object referencing)
+   * see the explanation above for DelegateList.disable
    * @param {item} item String denoting listener object to enable.
    * @returns {obj} DelegateList object (this).
    */
@@ -184,7 +195,7 @@
    * @name DelegateList.disable
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Enable all listeners for this particular eventType.
    * we do not use this.disable to modify the master disable switch
    * because user might accidentally calls this method without giving an argument
    * for that circumstance, we should do nothing
@@ -203,7 +214,7 @@
    * @name DelegateList.enable
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Disable all listeners for this particular eventType.
    * @param {item} item String denoting listener object to enable.
    * @returns {obj} DelegateList object (this).
    */
@@ -228,7 +239,7 @@
   DelegateList.prototype.handleEvent = function (evt) {
     // master switch
     if (this.disabled || this.delegates.length === 0) {
-    	evt.preventDefault();
+      evt.preventDefault();
       return;
     }
 
@@ -236,7 +247,7 @@
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
-      	evt.preventDefault();
+        evt.preventDefault();
         continue;
       }
       // FIXME: add documentation explaining why we use this instead of querySelector match
@@ -251,7 +262,9 @@
    * @name DelegateList.listen
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description  Bind (extra) listeners to a certain eventType.
+   * BE WARNED: (about JavaScript object referencing)
+   * see the explanation above for DelegateList.disable
    * @param {} Array or or multiple addEventListener objects .
    * @returns {obj} DelegateList object (this).
    */
@@ -288,7 +301,7 @@
    * @name DelegateList.listen
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Called removeEventListener to some listeners for current eventType.
    * @param {} item String denoting listener object to enable.
    * @returns {obj} DelegateList object (this).
    */
@@ -299,11 +312,10 @@
 
   /**
    * @DelegateList function
-   * @name DelegateList.listen
+   * @name DelegateList.isUnlistened
    * @function
    *
-   * @description Converts the specified string to uppercase.
-   * @param {} item String denoting listener object to enable.
+   * @description Check if a certain eventType is listened to.
    * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.isUnlistened = function () {
@@ -403,8 +415,11 @@
    * @name EventList
    * @function
    *
-   * @description Constructor for event delegate list.
-   * focus and blur does NOT bubble up
+   * @description Bind (extra) listeners to a certain eventType.
+   * BE WARNED: (about JavaScript object referencing)
+   * see the explanation above for DelegateList.disable
+   * if the eventType is `Unlistened`, it will be re-attached.
+   * focus and blur does NOT bubble up, so they are not supported.
    * @param {arr} arr Array or or multiple addEventListener objects.
    * @return {} Previously created singleton object or self
    */
@@ -427,7 +442,7 @@
         arr = [];
       }
       else {
-        arr = (arr[0] instanceof Array) ? arr[0] : arr; 
+        arr = (arr[0] instanceof Array) ? arr[0] : arr;
       }
     }
     // singleton for every event
@@ -459,10 +474,10 @@
    * @name EventList.unlisten
    * @function
    *
-   * @description Converts the specified string to uppercase.
+   * @description Called removeEventListener for a certain eventType.
    * only add a flag not to listen and removeEventListener
    * does NOT remove the EventList item
-   * @param {string} string String to be converted to uppercase.
+   * @param {string} string String denoting eventType.
    * @returns {} Previously created singleton object or self.
    */
   EventList.prototype.unlisten = function (_event) {
@@ -480,7 +495,7 @@
    * @function
    *
    * @description Safe way to remove EventList item.
-   * @param {string} string String to be converted to uppercase.
+   * @param {string} string String denoting eventType.
    * @returns {} Previously created singleton object or self.
    */
   EventList.prototype.remove = function (_event) {
@@ -497,8 +512,8 @@
    * @name EventList.disable
    * @function
    *
-   * @description 
-   * @param {string} string String denoting eventName to disable.
+   * @description Disable all listeners for a certain eventType.
+   * @param {string} string String denoting eventType to disable.
    * @returns {} Previously created singleton object or self.
    */
   EventList.prototype.disable = function (_event) {
@@ -515,8 +530,8 @@
    * @name EventList.enable
    * @function
    *
-   * @description 
-   * @param {string} string String denoting eventName to enable.
+   * @description Enable all listeners for a certain eventType.
+   * @param {string} string String denoting eventType to enable.
    * @returns {} Previously created singleton object or self.
    */
   EventList.prototype.enable = function (_event) {
@@ -535,11 +550,11 @@
    * @name EventList.loop
    * @function
    *
-   * @description Browser safe way to loop through eventName
+   * @description Browser safe way to loop through the list of eventType.
    * for lesser browser
    * always check for `__' prefix in for-in loop
    * TODO: do we need this iterator?
-   * @param {_callback} _callback Function to execute for each eventName object.
+   * @param {_callback} _callback Function to execute for each eventType object.
    */
   EventList.prototype.loop = function (_callback) {
     var _self = setEnv(this);
@@ -607,9 +622,9 @@
    * @name EventList.isUnlistened
    * @function
    *
-   * @description 
-   * @param {string} string String denoting eventName to enable.
-   * @returns {} Boolean indicating whether the eventName is listened to.
+   * @description Check if a certain eventType is listened to.
+   * @param {string} string String denoting eventType to enable.
+   * @returns {} Boolean indicating whether the eventType is listened to.
    */
   EventList.prototype.isUnlistened = function () {
     var _self = setEnv(this);
@@ -630,17 +645,16 @@
    */
   DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
 
-  // 
   /**
    * @EventList function
    * @name EventList.isUnlistened
    * @function
    *
    * @description Destory one or all previously created singletons.
-   * @param {string} string String denoting eventName to enable.
+   * @param {string} string String denoting eventType to enable.
    * @returns {} this.
    */
-  EventList.destorySingleton = EventList.prototype.destorySingleton = function() {
+  EventList.destorySingleton = EventList.prototype.destorySingleton = function () {
     if (!EventList.__registered__) {
       return this;
     }
