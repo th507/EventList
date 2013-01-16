@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font: 1em Helvetica, sans-serif;
+    padding: 20px 20px 0;
+}
+a {
+    color: #666;
+    text-decoration: none;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+    color: black;
+}
+h2, #footnote {
+    display: inline;
+    line-height: 30px;
+    height: 30px;    
+}
+#footnote {
+    margin-right: -20px;
+    font-size: 80%;
+    float: right;
+    background: #ccc;
+    color: #777;
+    padding: 0 10px;
+    -webkit-font-smoothing: antialiased;        
+}
+
+#test-field {
+    clear: both;
+    padding: 10px;
+}
+#test-field p {
+    margin-bottom: 1em;
+}
+
+#result {
+    position: fixed;
+    bottom: 0;
+    background: #3c94dc;
+    color: white;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 -20px;
+    padding-left: 20px;
+}
+#result h4 {
+    float: left;
+    margin-right: 10px;
+}
+#result span {
+    font-weight: 200;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+}
