@@ -379,8 +379,14 @@
           }
         }
       }
-      else if (element.length) {
-        element = element[0];
+      // might be Element/HTML*Element
+      else {
+        if (element.length) {
+          element = element[0];
+        }
+        if (element.id) {
+          selectorString = "#" + element.id;
+        }
       }
     }
     
