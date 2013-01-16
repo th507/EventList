@@ -398,7 +398,16 @@
     }
   }
 
-  // focus and blur does NOT bubble up
+  /**
+   * @EventList constructor
+   * @name EventList
+   * @function
+   *
+   * @description Constructor for event delegate list.
+   * focus and blur does NOT bubble up
+   * @param {arr} arr Array or or multiple addEventListener objects.
+   * @return {} Previously created singleton object or self
+   */
   EventList.prototype.listen = function () {
     var _self = setEnv(this);
 
@@ -445,8 +454,17 @@
     return _self;
   };
 
-  // only add a flag not to listen and removeEventListener
-  // does NOT remove the EventList item
+  /**
+   * @EventList function
+   * @name EventList.unlisten
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * only add a flag not to listen and removeEventListener
+   * does NOT remove the EventList item
+   * @param {string} string String to be converted to uppercase.
+   * @returns {} Previously created singleton object or self.
+   */
   EventList.prototype.unlisten = function (_event) {
     var _self = setEnv(this);
 
@@ -456,7 +474,15 @@
     return _self;
   };
 
-  // only safe way to remove EventList item
+  /**
+   * @EventList function
+   * @name EventList.remove
+   * @function
+   *
+   * @description Safe way to remove EventList item.
+   * @param {string} string String to be converted to uppercase.
+   * @returns {} Previously created singleton object or self.
+   */
   EventList.prototype.remove = function (_event) {
     var _self = setEnv(this);
     
@@ -466,6 +492,15 @@
     return _self;
   };
 
+  /**
+   * @EventList function
+   * @name EventList.disable
+   * @function
+   *
+   * @description 
+   * @param {string} string String denoting eventName to disable.
+   * @returns {} Previously created singleton object or self.
+   */
   EventList.prototype.disable = function (_event) {
     var _self = setEnv(this);
     
@@ -475,6 +510,15 @@
     return _self;
   };
 
+  /**
+   * @EventList function
+   * @name EventList.enable
+   * @function
+   *
+   * @description 
+   * @param {string} string String denoting eventName to enable.
+   * @returns {} Previously created singleton object or self.
+   */
   EventList.prototype.enable = function (_event) {
     var _self = setEnv(this);
     
@@ -486,11 +530,17 @@
     return _self;
   };
 
-
-
-  // for lesser browser
-  // always check for `__' prefix in for-in loop
-  // TODO: do we need this iterator?
+  /**
+   * @EventList function
+   * @name EventList.loop
+   * @function
+   *
+   * @description Browser safe way to loop through eventName
+   * for lesser browser
+   * always check for `__' prefix in for-in loop
+   * TODO: do we need this iterator?
+   * @param {_callback} _callback Function to execute for each eventName object.
+   */
   EventList.prototype.loop = function (_callback) {
     var _self = setEnv(this);
 
@@ -515,6 +565,14 @@
     }
   };
 
+  /**
+   * @EventList function
+   * @name EventList.getRootElement
+   * @function
+   *
+   * @description return the element which all event listener registered to.
+   * @returns {} rootElement for current EventList instance
+   */
   EventList.prototype.getRootElement = function () {
     // we do not use _self for safety reasons
     if (this.__root__) {
@@ -525,6 +583,14 @@
     }
   };
 
+  /**
+   * @EventList function
+   * @name EventList.getRootElementSelector
+   * @function
+   *
+   * @description return the element selector (if possible) which all event listener registered to.
+   * @returns {selector} selector String for current EventList rootElement.
+   */
   EventList.prototype.getRootElementSelector = function () {
     // we do not use _self for safety reasons
     if (this.__rootSelector__) {
@@ -536,18 +602,44 @@
     }
   };
 
+  /**
+   * @EventList function
+   * @name EventList.isUnlistened
+   * @function
+   *
+   * @description 
+   * @param {string} string String denoting eventName to enable.
+   * @returns {} Boolean indicating whether the eventName is listened to.
+   */
   EventList.prototype.isUnlistened = function () {
     var _self = setEnv(this);
     
     return _self.__unlistened__ || false;
   };
 
-  // Events.* has no way of knowing the `__root__'
-  // we have to delay this prototype function declaration
-  // to dismiss `EventList' not found error
+  /**
+   * @DelegateList function
+   * @name DelegateList.getRootElement
+   * @function
+   *
+   * @description return the element which all event listener registered to.
+   * EventList.* has no way of knowing the `__root__' (rootElement)
+   * we have to delay this prototype function declaration
+   * to dismiss `EventList' not found error
+   * @returns {} rootElement for current EventList instance
+   */
   DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
 
-  // destory one or all singletons
+  // 
+  /**
+   * @EventList function
+   * @name EventList.isUnlistened
+   * @function
+   *
+   * @description Destory one or all previously created singletons.
+   * @param {string} string String denoting eventName to enable.
+   * @returns {} this.
+   */
   EventList.destorySingleton = EventList.prototype.destorySingleton = function() {
     if (!EventList.__registered__) {
       return this;
