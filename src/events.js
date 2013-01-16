@@ -21,17 +21,45 @@
     }
   }
 
-  function getEventTarget(e) {
-    e = e || window.event;
-    return e.target || e.srcElement;
+  /**
+   * @helper function
+   * @name getEventTarget
+   * @function
+   *
+   * @description get event target (might not be necessary)
+   * @param {evt}
+   * @returns {Element} event target as element.
+   */
+
+  function getEventTarget(evt) {
+    evt = evt || window.event;
+    return evt.target || evt.srcElement;
   }
 
+  /**
+   * @helper function
+   * @name execute
+   * @function
+   *
+   * @description execute function with scope
+   * @param {func} func Function to be executed.
+   * @param {scope} scope scope where func gets executed in.
+   */
   function execute(func, scope) {
     if (func) {
       func.call(scope);
     }
   }
 
+  /**
+   * @helper function
+   * @name setEnv
+   * @function
+   *
+   * @description set environment for EventList/DelegateList functions
+   * @param {scope} scope Scope to look for singletons
+   * @returns {_sef} Previously created singleton object or self
+   */
   function setEnv(scope) {
     var _self, _previousInstance = scope.constructor.__registered__[scope.getRootElementSelector()];
     if (_previousInstance) {
@@ -44,6 +72,17 @@
     return _self;
   }
 
+  /**
+   * @helper function
+   * @name addEventListenerHelper
+   * @function
+   *
+   * @description A simple wrapper for addEventListener with attachEvent fallback
+   * @param {element} string String to be converted to uppercase.
+   * @param {_evnt} A string representing the event type to listen for.
+   * @param {_obj} Object that receives a notification when specified event occurs.
+   *               see addEventListener on MDN for more details
+   */
   function addEventListenerHelper(element, _event, _obj) {
     if (element.addEventListener) {
       element.addEventListener(_event, _obj, false);
@@ -53,6 +92,17 @@
     }
   }
 
+  /**
+   * @helper function
+   * @name removeEventListenerHelper
+   * @function
+   *
+   * @description A simple wrapper for removeEventListener with dettachEvent fallback
+   * @param {element} string String to be converted to uppercase.
+   * @param {_evnt} A string representing the event type to listen for.
+   * @param {_obj} Object that receives a notification when specified event occurs.
+   *               see addEventListener on MDN for more details
+   */
   function removeEventListenerHelper(element, _event, _obj) {
     if (element.removeEventListener) {
       element.removeEventListener(_event, _obj);
@@ -62,17 +112,17 @@
     }
   }
 
+
   /**
-   * @name DelegateList
+   * @DelegateList constructor
+   * @name angular.uppercase
    * @function
    *
-   * @description
-   * constructor for delegates method object/array
+   * @description Constructor for delegates method object/array.
    * create a object simular to array
    * better not subclassing JavaScript Array
    * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
-   *
-   * @param arr ARRAY
+   * @param {arr} arr Array of proper addEventListener objects.
    */
   function DelegateList(arr) {
     /*jshint validthis:true */
@@ -88,13 +138,22 @@
 
     // allow overwrite
     setProperty(this, "__unlistened__", false, true);
+
+    //return this;
   }
 
-  /*
+  /**
+   * @DelegateList function
+   * @name DelegateList.disable
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
    * we do not use this.disable to modify the master disable switch
    * because user might accidentally calls this method without giving an argument
    * for that circumstance, we should do nothing
    * instead, we use disableAll to modify the master disable switch
+   * @param {item} item String denoting listener object to disable.
+   * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.disable = function (item) {
     
@@ -104,6 +163,15 @@
     return this;
   };
 
+  /**
+   * @DelegateList function
+   * @name DelegateList.enable
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * @param {item} item String denoting listener object to enable.
+   * @returns {obj} DelegateList object (this).
+   */
   DelegateList.prototype.enable = function (item) {
     if (item) {
       changeState(this.delegates, item, false);
@@ -111,33 +179,56 @@
     return this;
   };
 
+  /**
+   * @DelegateList function
+   * @name DelegateList.disable
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * we do not use this.disable to modify the master disable switch
+   * because user might accidentally calls this method without giving an argument
+   * for that circumstance, we should do nothing
+   * instead, we use disableAll to modify the master disable switch
+   * @param {item} item String denoting listener object to disable.
+   * @returns {obj} DelegateList object (this).
+   */
+
   DelegateList.prototype.disableAll = function () {
     this.disabled = true;
     return this;
   };
 
+  /**
+   * @DelegateList function
+   * @name DelegateList.enable
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * @param {item} item String denoting listener object to enable.
+   * @returns {obj} DelegateList object (this).
+   */
   DelegateList.prototype.enableAll = function () {
     this.disabled = false;
     return this;
   };
 
   /**
-   * @name handleEvent
+   * @DelegateList function (internal function)
+   * @name DelegateList.handleEvent
    * @function
    *
-   * @description
-   * actual function to attach events
+   * @description Actual function to attach events.
    * we all know that we could bind object in addEventListener
    * http://w3.org/TR/DOM-Level-2-Events/events.html
    * provided there is a `handleEvent' property in the object
    * here is the trick, we COULD use a function to generate an object with
    * `handleEvent' nicely hidden inside its `prototype'
-   *
-   * @param evt
+   * @param {evt}  A string representing the event type to listen for.
    */
   DelegateList.prototype.handleEvent = function (evt) {
     // master switch
     if (this.disabled || this.delegates.length === 0) {
+    	evt.preventDefault();
       return;
     }
 
@@ -145,6 +236,7 @@
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
+      	evt.preventDefault();
         continue;
       }
       // FIXME: add documentation explaining why we use this instead of querySelector match
@@ -155,12 +247,13 @@
   };
 
   /**
-   * @name listen
+   * @DelegateList function
+   * @name DelegateList.listen
    * @function
    *
-   * @description
-   *
-   * @param arr
+   * @description Converts the specified string to uppercase.
+   * @param {} Array or or multiple addEventListener objects .
+   * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.listen = function () {
     // make arguments an array
@@ -190,16 +283,45 @@
     }
   };
 
+  /**
+   * @DelegateList function
+   * @name DelegateList.listen
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * @param {} item String denoting listener object to enable.
+   * @returns {obj} DelegateList object (this).
+   */
   DelegateList.prototype.unlisten = function () {
     removeEventListenerHelper(this.getRootElement(), this.__event__, this);
     this.__unlistened__ = true;
   };
+
+  /**
+   * @DelegateList function
+   * @name DelegateList.listen
+   * @function
+   *
+   * @description Converts the specified string to uppercase.
+   * @param {} item String denoting listener object to enable.
+   * @returns {obj} DelegateList object (this).
+   */
   DelegateList.prototype.isUnlistened = function () {
     return this.__unlistened__ || false;
   };
 
 
-  // constructor for event delegate Center
+  /**
+   * @EventList constructor
+   * @name EventList
+   * @function
+   *
+   * @description Constructor for event delegate list.
+   * create a object simular to array
+   * better not subclassing JavaScript Array
+   * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
+   * @param {arr} arr Array or or multiple addEventListener objects .
+   */
   function EventList(element, registeredVariable, variableScope) {
     var selectorString = null;
     if (!element || element === document || element === "document") {
