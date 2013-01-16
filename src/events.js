@@ -639,9 +639,7 @@
    * @returns {} Boolean indicating whether the eventType is listened to.
    */
   EventList.prototype.isUnlistened = function () {
-    var _self = setEnv(this);
-    
-    return _self.__unlistened__ || false;
+    return setEnv(this).__unlistened__ || false;
   };
 
   /**
@@ -673,6 +671,7 @@
 
     if (arguments.length === 0) {
       delete EventList.__registered__;
+      return this;
     }
     else {
       // only accept the first arguments at the moment
