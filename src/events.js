@@ -27,13 +27,13 @@
    * @function
    *
    * @description get event target (might not be necessary)
-   * @param {evt}
+   * @param {_event}
    * @returns {Element} event target as element.
    */
 
-  function getEventTarget(evt) {
-    evt = evt || window.event;
-    return evt.target || evt.srcElement;
+  function getEventTarget(_event) {
+    _event = _event || window.event;
+    return _event.target || _event.srcElement;
   }
 
   /**
@@ -43,9 +43,10 @@
    *
    * @description execute function with scope
    * @param {func} func Function to be executed.
-   * @param {scope} scope scope where func gets executed in.
+   * @param {scope} scope Scope where func gets executed in.
+   * @param {evt_info} additional information about current event.
    */
-  function execute(func, scope) {
+  function execute(func, scope, evt_info) {
     if (func) {
       func.call(scope);
     }
@@ -234,20 +235,20 @@
    * provided there is a `handleEvent' property in the object
    * here is the trick, we COULD use a function to generate an object with
    * `handleEvent' nicely hidden inside its `prototype'
-   * @param {evt}  A string representing the event type to listen for.
+   * @param {_event}  A string representing the event type to listen for.
    */
-  DelegateList.prototype.handleEvent = function (evt) {
+  DelegateList.prototype.handleEvent = function (_event) {
     // master switch
     if (this.disabled || this.delegates.length === 0) {
-      evt.preventDefault();
+      _event.preventDefault();
       return;
     }
 
-    var i, item, targetElement = getEventTarget(evt);
+    var i, item, targetElement = getEventTarget(_event);
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
-        evt.preventDefault();
+        _event.preventDefault();
         continue;
       }
       // FIXME: add documentation explaining why we use this instead of querySelector match
