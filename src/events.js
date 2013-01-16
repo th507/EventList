@@ -15,7 +15,7 @@
     var i, delegateItem;
     for (i = 0; delegateItem = delegateArray[i]; i++) {
       if (delegateItem[delegateSelector] === item) {
-        delegateItem.disabled = Boolean(state);
+        delegateItem.disabled = !!state;
         break;
       }
     }
