@@ -48,7 +48,7 @@
    */
   function execute(func, scope, evt_info) {
     if (func) {
-      func.call(scope);
+      func.call(scope, evt_info);
     }
   }
 
@@ -166,7 +166,6 @@
    * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.disable = function (item) {
-    
     if (item) {
       changeState(this.delegates, item, true);
     }
@@ -204,7 +203,6 @@
    * @param {item} item String denoting listener object to disable.
    * @returns {obj} DelegateList object (this).
    */
-
   DelegateList.prototype.disableAll = function () {
     this.disabled = true;
     return this;
@@ -253,7 +251,10 @@
       }
       // FIXME: add documentation explaining why we use this instead of querySelector match
       if (elementFitsDescription(targetElement, item[delegateSelector])) {
-        execute(item[delegateFunction], targetElement);
+        execute(item[delegateFunction], targetElement, {
+          rootElement: this.__root__,
+          eventType: this.__event__
+        });
       }
     } // end of for loop
   };
