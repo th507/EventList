@@ -7,18 +7,6 @@
 
 <link href="demo.css" rel="stylesheet" type="text/css">
 
-<style>
-#test-field p {
-    background: white;
-    border-radius: 0;
-}
-
-#test-field p.clicked {
-    background: #ddd;
-    border-radius: 5px;
-}
-</style>
-
 <!-- include source files here... -->
 <script src="../src/setProperty.js"></script>
 <script src="../src/elementFitsDescription.js"></script>
@@ -62,15 +50,6 @@ var evt = new EventList("#test-field");
 evt.listen("click", {
     selector: "p",
     handler: function (delegates) {
-        var paragraphs = this.parentNode.getElementsByTagName("p");
-        for (var i = 0, item; item = paragraphs[i]; i++) {
-            if (item !== this) {
-                item.className = "";
-            }
-            else if (!/clicked/.test(this.className)) {
-                this.className = this.className ? this.className + " clicked" : "clicked";
-            }
-        }
         var msg = "";
         msg += "rootElement: " + delegates.constructor.constructor.getRootElementSelector();
         msg += "; eventType: " + delegates.getEventType();
