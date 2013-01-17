@@ -1,4 +1,4 @@
-/* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
+/* ex: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
 
 /*jshint unused:false, boss:true */
 /*global setProperty:true, elementFitsDescription:true */
@@ -10,7 +10,17 @@
   var delegateSelector = "selector",
       delegateFunction = "handler";
 
-  // shorthand or toggle individual state of delegateFunction
+  // Helper functions {{{ 1
+  /**
+   * @helper function
+   * @name changeState
+   * @function
+   * {{{ 2
+   * @description Shorthand or toggle state of a delegate.
+   * @param {delegateArray} delegateList.delegates
+   * @param {_event} A string representing the eventType to listen for.
+   * @param {state} Boolean state indicating disabled/enabled.
+   */
   function changeState(delegateArray, item, state) {
     var i, delegateItem;
     for (i = 0; delegateItem = delegateArray[i]; i++) {
@@ -20,27 +30,28 @@
       }
     }
   }
+  // 2 }}}
 
   /**
    * @helper function
    * @name getEventTarget
    * @function
-   *
+   * {{{ 2
    * @description get event target (might not be necessary)
-   * @param {_event}
+   * @param {_event} A string representing the eventType to listen for.
    * @returns {Element} event target as element.
    */
-
   function getEventTarget(_event) {
     _event = _event || window.event;
     return _event.target || _event.srcElement;
   }
+  // 2 }}}
 
   /**
    * @helper function
    * @name execute
    * @function
-   *
+   * {{{ 2
    * @description execute function with scope
    * @param {func} func Function to be executed.
    * @param {scope} scope Scope where func gets executed in.
@@ -51,12 +62,13 @@
       func.call(scope, delegates);
     }
   }
+  // 2 }}}
 
   /**
    * @helper function
    * @name setEnv
    * @function
-   *
+   * {{{ 2
    * @description set environment for EventList/DelegateList functions
    * @param {scope} scope Scope to look for singletons
    * @returns {_sef} Previously created singleton object or self
@@ -72,12 +84,13 @@
     _previousInstance = null;
     return _self;
   }
+  // 2 }}}
 
   /**
    * @helper function
    * @name addEventListenerHelper
    * @function
-   *
+   * {{{ 2
    * @description A simple wrapper for addEventListener with attachEvent fallback
    * @param {element} string String denoting the rootElement.
    * @param {_evnt} A string representing the eventType to listen for.
@@ -92,15 +105,16 @@
       element.attachEvent("on" + _event, _obj);
     }
   }
+  // 2 }}}
 
   /**
    * @helper function
    * @name removeEventListenerHelper
    * @function
-   *
+   * {{{ 2
    * @description A simple wrapper for removeEventListener with dettachEvent fallback
    * @param {element} string String denoting the rootElement.
-   * @param {_evnt} A string representing the eventType to listen for.
+   * @param {_event} A string representing the eventType to listen for.
    * @param {_obj} Object that receives a notification when specified event occurs.
    *               see addEventListener on MDN for more details
    */
@@ -112,13 +126,16 @@
       element.detachEvent("on" + _event, _obj);
     }
   }
+  // 2 }}}
 
+  // 1 }}}
 
+  // DelegateList {{{ 1
   /**
    * @DelegateList constructor
    * @name DelegateList
    * @function
-   *
+   * {{{ 2
    * @description Constructor for delegates method object/array.
    * create a object simular to array
    * better not subclassing JavaScript Array
@@ -142,24 +159,26 @@
 
     //return this;
   }
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.getEventType
    * @function
-   *
+   * {{{ 2
    * @description Get eventType for this DelegateList.
    * @returns {string} String denoting eventType for this DelegateList.
    */
   DelegateList.prototype.getEventType = function () {
     return this.__event__ || "undefined";
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.disable
    * @function
-   *
+   * {{{ 2
    * @description Disable a certain listener.
    * BE WARNED: (about JavaScript object referencing)
    * this methods suffers the same fortune/misfortune of JavaScript language,
@@ -183,12 +202,13 @@
     }
     return this;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.enable
    * @function
-   *
+   * {{{ 2
    * @description Enable a certain listener.
    * BE WARNED: (about JavaScript object referencing)
    * see the explanation above for DelegateList.disable
@@ -201,12 +221,13 @@
     }
     return this;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.disable
    * @function
-   *
+   * {{{ 2
    * @description Enable all listeners for this particular eventType.
    * we do not use this.disable to modify the master disable switch
    * because user might accidentally calls this method without giving an argument
@@ -219,12 +240,13 @@
     this.disabled = true;
     return this;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.enable
    * @function
-   *
+   * {{{ 2
    * @description Disable all listeners for this particular eventType.
    * @param {item} item String denoting listener object to enable.
    * @returns {obj} DelegateList object (this).
@@ -233,12 +255,13 @@
     this.disabled = false;
     return this;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function (internal function)
    * @name DelegateList.handleEvent
    * @function
-   *
+   * {{{ 2
    * @description Actual function to attach events.
    * we all know that we could bind object in addEventListener
    * http://w3.org/TR/DOM-Level-2-Events/events.html
@@ -267,12 +290,13 @@
       }
     } // end of for loop
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.listen
    * @function
-   *
+   * {{{ 2
    * @description  Bind (extra) listeners to a certain eventType.
    * BE WARNED: (about JavaScript object referencing)
    * see the explanation above for DelegateList.disable
@@ -306,12 +330,13 @@
       this.__unlistened__ = false;
     }
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.listen
    * @function
-   *
+   * {{{ 2
    * @description Called removeEventListener to some listeners for current eventType.
    * @param {} item String denoting listener object to enable.
    * @returns {obj} DelegateList object (this).
@@ -320,25 +345,28 @@
     removeEventListenerHelper(this.getRootElement(), this.__event__, this);
     this.__unlistened__ = true;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.isUnlistened
    * @function
-   *
+   * {{{ 2
    * @description Check if a certain eventType is listened to.
    * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.isUnlistened = function () {
     return this.__unlistened__ || false;
   };
+  // 2 }}}
+  // 1 }}}
 
-
+  // EventList {{{ 1
   /**
    * @EventList constructor
    * @name EventList
    * @function
-   *
+   * {{{ 2
    * @description Constructor for event delegate list.
    * create a object simular to array
    * better not subclassing JavaScript Array
@@ -346,18 +374,19 @@
    * @param {arr} arr Array or or multiple addEventListener objects .
    */
   function EventList(element, registeredVariable, variableScope) {
+    /*global jQuery:true*/
+
     var selectorString = null;
+
     if (!element || element === document || element === "document") {
       element = document;
       selectorString = "document";
     }
     else {
-      /* this is only mute jshint warning */
-      /*global jQuery:true*/
-      // if `element' is a jQuery object
       if ("jQuery" in window && element instanceof jQuery) {
         selectorString = element.selector;
         element = element[0];
+
         // jQuery.selector return "" for $(document), $(document.body)
         // so we have to do some extra check
         if (element === document) {
@@ -426,12 +455,13 @@
       setProperty(this, "__rootSelector__", selectorString);
     }
   }
+  // 2 }}}
 
   /**
    * @EventList constructor
    * @name EventList
    * @function
-   *
+   * {{{ 2
    * @description Bind (extra) listeners to a certain eventType.
    * BE WARNED: (about JavaScript object referencing)
    * see the explanation above for DelegateList.disable
@@ -486,12 +516,13 @@
 
     return _self;
   };
+  // 2 }}}  
 
   /**
    * @EventList function
    * @name EventList.unlisten
    * @function
-   *
+   * {{{ 2
    * @description Called removeEventListener for a certain eventType.
    * only add a flag not to listen and removeEventListener
    * does NOT remove the EventList item
@@ -506,12 +537,13 @@
     
     return _self;
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.remove
    * @function
-   *
+   * {{{ 2
    * @description Safe way to remove EventList item.
    * @param {string} string String denoting eventType.
    * @returns {} Previously created singleton object or self.
@@ -524,12 +556,13 @@
     
     return _self;
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.disable
    * @function
-   *
+   * {{{ 2
    * @description Disable all listeners for a certain eventType.
    * @param {string} string String denoting eventType to disable.
    * @returns {} Previously created singleton object or self.
@@ -542,12 +575,13 @@
     }
     return _self;
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.enable
    * @function
-   *
+   * {{{ 2
    * @description Enable all listeners for a certain eventType.
    * @param {string} string String denoting eventType to enable.
    * @returns {} Previously created singleton object or self.
@@ -562,12 +596,13 @@
     }
     return _self;
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.loop
    * @function
-   *
+   * {{{ 2
    * @description Browser safe way to loop through the list of eventType.
    * for lesser browser
    * always check for `__' prefix in for-in loop
@@ -597,12 +632,13 @@
       }
     }
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.getRootElement
    * @function
-   *
+   * {{{ 2
    * @description return the element which all event listener registered to.
    * @returns {} rootElement for current EventList instance
    */
@@ -634,12 +670,13 @@
       return null;
     }
   };
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.isUnlistened
    * @function
-   *
+   * {{{ 2
    * @description Check if a certain eventType is listened to.
    * @param {string} string String denoting eventType to enable.
    * @returns {} Boolean indicating whether the eventType is listened to.
@@ -647,12 +684,13 @@
   EventList.prototype.isUnlistened = function () {
     return setEnv(this).__unlistened__ || false;
   };
+  // 2 }}}
 
   /**
    * @DelegateList function
    * @name DelegateList.getRootElement
    * @function
-   *
+   * {{{ 2
    * @description return the element which all event listener registered to.
    * EventList.* has no way of knowing the `__root__' (rootElement)
    * we have to delay this prototype function declaration
@@ -660,12 +698,13 @@
    * @returns {} rootElement for current EventList instance
    */
   DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
+  // 2 }}}
 
   /**
    * @EventList function
    * @name EventList.isUnlistened
    * @function
-   *
+   * {{{ 2
    * @description Destory one or all previously created singletons.
    * @param {string} string String denoting eventType to enable.
    * @returns {} this.
@@ -691,6 +730,9 @@
       }
     }
   };
+  // 2 }}}
+  
+  // 1 }}}
 
   // in case we need multiple instances
   root[name] = EventList;
