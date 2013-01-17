@@ -1,6 +1,6 @@
 # EventList
 
-EventList is a (not so) simple wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
+EventList is a handy wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
 
 ## Basic Usage (aka tl;dr)
 
@@ -60,7 +60,7 @@ This will call `foo.unlisten("click")`, then remove `foo.click` which holds all 
 
 # Documentation
 
-## Data Structure
+## Structure
 
 A typical `EventList` looks like this
 
@@ -69,10 +69,11 @@ A typical `EventList` looks like this
 				|- ...
 				|- eventType: delegateList
 				|
-				|- __root__: (unenumberable)
-				\- __rootSelector__: (optional)
+				|- __root__: (not enumerable)
+				\- __rootSelector__: (optional, not enumerable)
 
-It's an object containing all eventType you registered with EventList. You could access any eventType using 	dot syntax (like `foo.click`).	
+It's an object containing all eventType you registered with EventList. You could access any eventType using dot syntax (like `foo.click`).	
+Delegates for a certain eventType is stored in as the key-value pair.
 
 ### [](id:delegateList)DelegateList object
 
@@ -84,8 +85,8 @@ A typical `DelegateList` looks like this
 				   |- unlistened: (optional)
 				   |
 				   |- __event__: eventType
-				   |- __root__: (unenumberable)
-				   \- __rootSelector__: (optional)
+				   |- __root__: (not enumerable)
+				   \- __rootSelector__: (optional, not enumerable)
 
 
 
