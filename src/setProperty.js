@@ -12,17 +12,17 @@ if (!Object.prototype.hasOwnProperty) {
 }
 
 // FIXME:
-// 1. better fallback
-// 2. assign multiple key/value at once
+// maybe assign multiple key/value at once?
 /**
+ * @helper function
  * @name setProperty
  * @function
- *
- * @description:
- *
- * @param obj {Object}
- * @param key {String}
- * @param val {String/Object/Function/Array}
+ * {{{ 2
+ * @description Setting an unenumerable value to an object.
+ * @param {obj} Original object which to add the key:value to.
+ * @param {key} Key for the value.
+ * @param {val} Value to be assigned.
+ * @param {writableFlag} Writable or not.
  */
 function setProperty(obj, key, val, writableFlag) {
   if (Object.hasOwnProperty("defineProperty")) {
