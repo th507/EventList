@@ -1,15 +1,14 @@
-/* ex: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
+/* vim: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
 
 /*jshint unused:false, boss:true */
-/*global document:true */
+/*jshint indent:2 */
 
 // error, focus, blur, ... does not bubble up
 // http://www.w3.org/TR/DOM-Level-3-Events/
 (function (root, name) {
   "use strict";
   // in case we decide to change those names later on
-  var delegateSelector = "selector",
-      delegateFunction = "handler";
+  var delegateSelector = "selector", delegateFunction = "handler";
 	
   // polyfilling hasOwnProperty for lesser browser
   // https://gist.github.com/332357
@@ -506,49 +505,41 @@
    */
   function EventList(element, registeredVariable, variableScope) {
     /*global jQuery:true*/
-
     var selectorString = null;
+    element = element || document;
 
-    if (!element || element === document || element === "document") {
-      element = document;
+    if ("jQuery" in window && element instanceof jQuery) {
+      selectorString = element.selector;
+      element = element[0];
+    }
+    else if (typeof element === "string") {
+      if (element === "document") {
+        selectorString = element;
+        element = document;
+      }
+      else if ("querySelector" in document) {
+        selectorString = element;
+        element = document.querySelector(selectorString);
+        if (!element) {
+          throw new TypeError("Unable to parse element: unexpected response from querySelector.");
+        }
+      }
+    }
+    else if (element.length) {
+      element = element[0];
+    }
+    
+    if (element === document) {
       selectorString = "document";
     }
-    else {
-      if ("jQuery" in window && element instanceof jQuery) {
-        selectorString = element.selector;
-        element = element[0];
-
-        // jQuery.selector return "" for $(document), $(document.body)
-        // so we have to do some extra check
-        if (element === document) {
-          selectorString = "document";
-        }
-        else if (element === document.body) {
-          selectorString = "body";
-        }
-      }
-      
-      // if `element' is a string
-      // we do not have to use getTypeOf
-      // typeof seems to be enough
-      else if (typeof element === "string") {
-        if ("querySelector" in document) {
-          selectorString = element;
-          if (!(element = document.querySelector(selectorString))) {
-            throw new TypeError("Unable to parse element: unexpected response from querySelector.");
-          }
-        }
-      }
-      // might be Element/HTML*Element
-      else {
-        if (element.length) {
-          element = element[0];
-        }
-        if (element.id) {
-          selectorString = "#" + element.id;
-        }
-      }
+    else if (element === document.body) {
+      selectorString = "body";
     }
+    else if (!selectorString && element.id) {
+      selectorString = "#" + element.id;
+    }
+
+
     
     if (!element.addEventListener && !element.attachEvent) {
       throw new Error("Unable to find addEventListener and attachEvent on element.");
@@ -629,7 +620,6 @@
       _self[_event].constructor.constructor = _self;
       // until we have a better solution, we'll have to contaminate all object
       // created by DelegateList
-      setProperty(_self[_event], "__root__", _self.getRootElement());
       setProperty(_self[_event], "__event__", _event);
 
       addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
@@ -743,7 +733,7 @@
   EventList.prototype.loop = function (_callback) {
     var _self = setEnv(this);
 
-    _callback = _callback || function (key) {};
+    _callback = _callback || function () {};
     
     // for browser that support `propertyIsEnumberable'
     // we check if prototype
@@ -828,7 +818,9 @@
    * to dismiss `EventList' not found error
    * @returns {} rootElement for current EventList instance
    */
-  DelegateList.prototype.getRootElement = EventList.prototype.getRootElement;
+  DelegateList.prototype.getRootElement = function () {
+    return this.constructor.constructor.getRootElement();
+  };
   // 2 }}}
 
   /**
