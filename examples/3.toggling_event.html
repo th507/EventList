@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<title>Basic setup for EventList</title>
+<title>Toggling Events for EventList</title>
 
 <link href="demo.css" rel="stylesheet" type="text/css">
 
@@ -17,6 +17,11 @@
     background: #ddd;
     border-radius: 5px;
 }
+button {
+    margin: 20px 0;
+    font-size: 100%;
+    padding: 5px 10px;
+}
 </style>
 
 <!-- include source files here... -->
@@ -29,16 +34,21 @@
 </head>
 
 <body>
-<h2>Basic Setup (click paragraph)</h2>
+<h2>Toggling Events</h2>
 <div id=footnote>
 Dummy text: <a href="http://www.lipsum.com/">Lipsum Lorem (English)</a> and <a href="http://more.handlino.com/">MoreText (Chinese)</a>
 </div>
+<div class="clearfix"></div>
 
 <div id=test-field>
 <p>Morbi vel fermentum eros. Quisque tincidunt enim a odio faucibus malesuada. Cras faucibus risus ut tortor lobortis lacinia. Nam feugiat sollicitudin dolor, vel interdum nisl sagittis a. Duis et orci ac tortor feugiat bibendum. Phasellus ornare, mauris vitae venenatis placerat, neque turpis dignissim nulla, non ornare elit est ut nibh. Nullam faucibus tristique bibendum. Nullam id turpis ut est gravida adipiscing. Sed erat leo, aliquet vitae semper in, mollis a lacus. Suspendisse tempus molestie enim eget cursus.</p>
 
 <p>In sed lacus augue, a aliquam mi. Quisque congue porttitor rhoncus. Maecenas dolor purus, ornare ac venenatis at, rutrum in est. Donec turpis sapien, iaculis in laoreet ac, luctus sed lorem. Suspendisse eu leo ut neque vestibulum mollis. Phasellus felis est, egestas a malesuada eu, imperdiet sed augue. Donec ut ante eros. Phasellus dapibus, massa quis accumsan sagittis, nisl justo imperdiet risus, a tincidunt quam metus eu neque. Pellentesque quis lorem lectus, sed pulvinar enim. Vivamus nec libero ligula, vitae rutrum enim. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+
+<button>Enable click</button>
+<button>Disabled click</button>
 </div>
+
 
 
 <div id=result><h4>EventList</h4><span>&nbsp;Log</span></div>
@@ -52,25 +62,30 @@ function id(el) {
 
 var evt = new EventList("#test-field");
 evt.listen("click", {
-    selector: "p",
-    handler: function (delegates) {
-        var paragraphs = this.parentNode.getElementsByTagName("p");
-        for (var i = 0, item; item = paragraphs[i]; i++) {
-            if (item !== this) {
-                item.className = "";
+        selector: "p",
+        handler: function (delegates) {
+            var msg = "";
+            msg += "rootElement: " + delegates.constructor.constructor.getRootElementSelector();
+            msg += "; eventType: " + delegates.getEventType();
+            msg += "; targetElement: " + this.innerHTML.substring(0, 10) + ".";
+
+            id("result").getElementsByTagName("span")[0].innerHTML = msg;
+        }
+    },
+    {
+        selector: "button",
+        handler: function(delegates) {
+            if (/Disable/.test(this.innerHTML)) {
+                delegates.disable("p");
+                id("result").getElementsByTagName("span")[0].innerHTML = "Disabled";
             }
-            else if (!/clicked/.test(this.className)) {
-                this.className = this.className ? this.className + " clicked" : "clicked";
+            else if (/Enable/.test(this.innerHTML)) {
+                delegates.enable("p");
+                id("result").getElementsByTagName("span")[0].innerHTML = "Enabled";
             }
         }
-        var msg = "";
-        msg += "rootElement: " + delegates.constructor.constructor.getRootElementSelector();
-        msg += "; eventType: " + delegates.getEventType();
-        msg += "; targetElement: " + this.innerHTML.substring(0, 10) + ".";
-
-        id("result").getElementsByTagName("span")[0].innerHTML = msg;
     }
-});
+);
 </script>
 </body>
 </html>
