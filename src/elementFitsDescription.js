@@ -3,19 +3,20 @@
 
 
 /**
+ * @helper function
  * @name elementHasClass
  * @function
  *
- * @description
- *
- * @param element
- * @param _className
+ * @description Check if element has a className.
+ * @param {el} Element to check.
+ * @param {className} ClassName to look for.
+ * @return {boolean} Boolean true or false.
  */
 function elementHasClass(el, _className) {
   // has to do this check first because if _className is not present
   // and el is absence as well, it should not return true
   if (!el) {
-    throw new Error("elementHasClass failed becase element is undefined");
+    throw new Error("Element Undefined");
   }
   if (!_className) {
     return true;
@@ -32,21 +33,20 @@ function elementHasClass(el, _className) {
   return (new RegExp("\\b" + _className + "\\b").test(el.className));
 }
 
-
 /**
- * @name elementCanBeDescribedAs
+ * @helper function
+ * @name elementFitsDescription
  * @function
  *
- * @description
- *
+ * @description Check if element fits given description.
  * support 4 selectors:
  * 1.  #id
  * 2.  .className
  * 3.  tagName
  * 4.  tagName.className
- *
- * @param el
- * @param selector
+ * @param {el} Element to check.
+ * @param {selector} selector to check against.
+ * @return {boolean} Boolean true or false.
  */
 function elementFitsDescription(el, selector) {
   if (!selector) {
