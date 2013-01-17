@@ -3,7 +3,15 @@
 /*jshint unused:false, boss:true */
 /*global setProperty:true, elementFitsDescription:true */
 
-// you should polyfill hasOwnProperty if you are running on a lesser browser
+// polyfilling hasOwnProperty for lesser browser
+// https://gist.github.com/332357
+if (!Object.prototype.hasOwnProperty) {
+  Object.prototype.hasOwnProperty = function (prop) {
+    var proto = this.prototype || this.constructor.prototype;
+    return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
+  };
+}
+
 (function (root, name) {
   "use strict";
   // in case we decide to change those names later on
@@ -106,6 +114,29 @@
       // end of default branch
     }
     return null;
+  }
+  // 2 }}}
+
+  /**
+   * @helper function
+   * @name setProperty
+   * @function
+   * {{{ 2
+   * @description Setting an unenumerable value to an object.
+   * @param {obj} Original object which to add the key:value to.
+   * @param {key} Key for the value.
+   * @param {val} Value to be assigned.
+   * @param {writableFlag} Writable or not.
+   */
+  function setProperty(obj, key, val, writableFlag) {
+    if (Object.hasOwnProperty("defineProperty")) {
+      Object.defineProperty(obj, key, { value: val,
+                                        writable : writableFlag || false
+      });
+    }
+    else {
+      obj[key] = val;
+    }
   }
   // 2 }}}
 
