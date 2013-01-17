@@ -1,22 +1,24 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
 
 /*jshint unused:false, boss:true */
-/*global setProperty:true, elementFitsDescription:true */
+/*global document:true */
 
-// polyfilling hasOwnProperty for lesser browser
-// https://gist.github.com/332357
-if (!Object.prototype.hasOwnProperty) {
-  Object.prototype.hasOwnProperty = function (prop) {
-    var proto = this.prototype || this.constructor.prototype;
-    return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
-  };
-}
-
+// error, focus, blur, ... does not bubble up
+// http://www.w3.org/TR/DOM-Level-3-Events/
 (function (root, name) {
   "use strict";
   // in case we decide to change those names later on
   var delegateSelector = "selector",
       delegateFunction = "handler";
+	
+  // polyfilling hasOwnProperty for lesser browser
+  // https://gist.github.com/332357
+  if (!Object.prototype.hasOwnProperty) {
+    Object.prototype.hasOwnProperty = function (prop) {
+      var proto = this.prototype || this.constructor.prototype;
+      return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
+    };
+  }
 
   // Helper functions {{{ 1
   /**
@@ -588,7 +590,7 @@ if (!Object.prototype.hasOwnProperty) {
 
   /**
    * @EventList constructor
-   * @name EventList
+   * @name EventList.listen
    * @function
    * {{{ 2
    * @description Bind (extra) listeners to a certain eventType.
@@ -645,7 +647,7 @@ if (!Object.prototype.hasOwnProperty) {
 
     return _self;
   };
-  // 2 }}}  
+  // 2 }}}
 
   /**
    * @EventList function
