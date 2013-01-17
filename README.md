@@ -1,7 +1,9 @@
 # EventList
-EventList is a (not so) simple wrapper for event delegation. It is similar similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
+
+EventList is a (not so) simple wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
 
 ## Basic Usage (aka tl;dr)
+
 ### Initialization
 
 	var foo = new EventList("#root-element");
@@ -12,7 +14,6 @@ or you could pass in a jQuery element
 
 	
 ### Adding listener for events
-
 
 	foo.listen("click", {
 		selector: "p",
@@ -66,8 +67,73 @@ A typical `EventList` looks like this
 	EventList ---
 				|- eventType: delegateList
 				|- ...
-				\- eventType: delegateList
-				
+				|- eventType: delegateList
+				|
+				|- __root__: (unenumberable)
+				\- __rootSelector__: (optional)
+
+It's an object containing all eventType you registered with EventList. You could access any eventType using 	dot syntax (like `foo.click`).	
+
+### [](id:delegateList)DelegateList object
+
+A typical `DelegateList` looks like this
+
+	delegateList ---
+				   |- delegates: delegates array
+				   |- disabled: (optional)
+				   |- unlistened: (optional)
+				   |
+				   |- __event__: eventType
+				   |- __root__: (unenumberable)
+				   \- __rootSelector__: (optional)
+
+
+
+
+### [](id:delegateList)DelegateList.delegates array
+
+A typical `DelegateList.delegates` is an array that looks like this
+ 
+ 		[
+ 			{ selector: "a",
+ 			  handler: function() {…}
+ 			},
+ 			{ selector: "#bar",
+ 			  handler: function([delegates]) {...}
+ 			}
+		]
+	
+`selector` is a string for element matching. `elementFitsDescription` function is responsible for parsing `selector` string. It supports:
+
+* \#id
+* .class
+* tag
+* tag.class
+
+If you'd like to extend `selector` capability, take a look and overwrite `elementFitsDescription`.
+
+Noted that any delegate passed into `EventList.listen` will be examined, if `selector` property is absent, this object will be ignored. So you could pass malformed object in without raising errors.
+
+`handler` is the function for target element. In it, `this` is pointed to the target element.
+	
+Most of `EventList` methods are implemented in `delegateList`, such as[^polyfill]
+
+* `listen`
+* `disable`
+* `enable`
+
+Calling them yields in identical effects as expected. For example (assuming `foo.click` is present), you could write
+
+	foo.click.listen({…})
+
+	foo.click.disable("p")
+
+to add and/or disable delegates.
+
+### handler function
+
+
+### accessing DelegateList/EventList object in handler
 
 ## Initialization
 
@@ -79,7 +145,7 @@ Accepted types for `element`:
 * jQuery element (may **NOT** support singleton creation), 
 * DOM Element[^element] (does **NOT** support singleton creation)
 
-## [](id:singleton)Initialization as a singleton
+### [](id:singleton)Initialization as a singleton
 
 Pass in singleton variable name and variable scope when instantiating `EventList` will make a singleton `EventList` for that specific element.
 
@@ -155,47 +221,7 @@ In fact, you could simple push new delegates into the array and delegates are au
 
 But this is not recommended and does **NOT** play well with [singleton's two way binding](#singleton).
 
-## [](id:delegateList)Delegate object
 
-A typical delegate object looks like this
- 
- 		[
- 			{ selector: "a",
- 			  handler: function() {…}
- 			},
- 			{ selector: "#bar",
- 			  handler: function() {...}
- 			}
-		]
-	
-`selector` is a string for element matching. `elementFitsDescription` function is responsible for parsing `selector` string. It supports:
-
-* `#id`
-* `.class`
-* `tag`
-* `tag.class`
-
-If you'd like to extend `selector` capability, take a look and overwrite `elementFitsDescription`.
-
-Noted that any delegate passed into `EventList.listen` will be examined, if `selector` property is absent, this object will be ignored.
-
-So you could pass malformed object into `EventList.listen` without raising errors.
-
-`handler` is the function for target element. In it, `this` is pointed to the target element.
-	
-Most of `EventList` methods are implemented in `delegateList`, such as[^polyfill]
-
-* `listen`
-* `disable`
-* `enable`
-
-Calling them yields in identical effects as expected. For example (assuming `foo.click` is present), you could write
-
-	foo.click.listen({…})
-
-	foo.click.disable("p")
-
-to add and/or disable delegates.
 
 
 ## Disabling/Enabling delegates
