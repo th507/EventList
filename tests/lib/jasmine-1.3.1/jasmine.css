@@ -9,7 +9,7 @@ body { background-color: #fff; padding: 0; margin: 5px; overflow-y: scroll; }
 #HTMLReporter .version { color: #aaaaaa; }
 #HTMLReporter .banner { margin-top: 14px; }
 #HTMLReporter .duration { color: #aaaaaa; float: right; }
-#HTMLReporter .symbolSummary { overflow: hidden; *zoom: 1; margin: 14px 0; }
+#HTMLReporter .symbolSummary { overflow: hidden; *zoom: 1; margin: 0; }
 #HTMLReporter .symbolSummary li { display: block; float: left; height: 14px; width: 21px; margin-bottom: 7px; font-size: 18px; }
 #HTMLReporter .symbolSummary li.passed { font-size: 34px; }
 #HTMLReporter .symbolSummary li.passed:before { color: #3c94dc; content: "\02022"; }
