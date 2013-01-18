@@ -7,9 +7,11 @@
 // http://www.w3.org/TR/DOM-Level-3-Events/
 (function (root, name) {
   "use strict";
-  // in case we decide to change those names later on
+  // you could change those key for delegates object
   var delegateSelector = "selector", delegateFunction = "handler";
 	
+  // Helper functions {{{ 1
+  // {{{ 2
   // polyfilling hasOwnProperty for lesser browser
   // https://gist.github.com/332357
   if (!Object.prototype.hasOwnProperty) {
@@ -18,8 +20,8 @@
       return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
     };
   }
+  // 2 }}}
 
-  // Helper functions {{{ 1
   /**
    * @helper function
    * @name elementHasClass
