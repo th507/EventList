@@ -277,6 +277,7 @@
   function DelegateList(arr) {
     /*jshint validthis:true */
     this.disabled = false;
+    this.unlistened = false;
     if (arr) {
       arr = arr.filter(function (i) {
         if (i.hasOwnProperty(delegateSelector)) {
@@ -285,9 +286,6 @@
       });
     }
     this.delegates = arr || [];
-
-    // allow overwrite
-    setProperty(this, "__unlistened__", false, true);
 
     //return this;
   }
@@ -457,9 +455,9 @@
       }
     }
     
-    if (this.__unlistened__ === true) {
+    if (this.unlistened === true) {
       addEventListenerHelper(this.getRootElement(), this.__event__, this);
-      this.__unlistened__ = false;
+      this.unlistened = false;
     }
   };
   // 2 }}}
@@ -475,7 +473,7 @@
    */
   DelegateList.prototype.unlisten = function () {
     removeEventListenerHelper(this.getRootElement(), this.__event__, this);
-    this.__unlistened__ = true;
+    this.unlistened = true;
   };
   // 2 }}}
 
@@ -488,7 +486,7 @@
    * @returns {obj} DelegateList object (this).
    */
   DelegateList.prototype.isUnlistened = function () {
-    return this.__unlistened__ || false;
+    return this.unlistened || false;
   };
   // 2 }}}
 
@@ -649,7 +647,7 @@
       if (_self[_event].isUnlistened) {
         //_self.getRootElement().addEventListener(_event, _self[_event]);
         addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
-        _self.__unlistened__ = false;
+        _self.unlistened = false;
       }
     }
     arr = null;
@@ -673,7 +671,7 @@
     var _self = setEnv(this);
 
     removeEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
-    _self[_event].__unlistened__ = true;
+    _self[_event].unlistened = true;
     
     return _self;
   };
@@ -856,7 +854,7 @@
    * @returns {} Boolean indicating whether the eventType is listened to.
    */
   EventList.prototype.isUnlistened = function () {
-    return setEnv(this).__unlistened__ || false;
+    return setEnv(this).unlistened || false;
   };
   // 2 }}}
 
