@@ -2,6 +2,7 @@
 
 EventList is a handy wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element. EventList only works for event that **bubbles up** the DOM tree.
 
+
 ## Basic Usage (aka tl;dr)
 
 ### Initialization
@@ -10,7 +11,11 @@ EventList is a handy wrapper for event delegation. It is similar to `jQuery.live
 	
 or you could pass in a jQuery element 
 
-	var foo = new EventList($("#root-element"))
+	var foo = new EventList($("#root-element"));
+
+or an element by selector
+	
+	var foo = new EventList(document.getElementById("root-element"));
 
 	
 ### Adding listener for events
@@ -18,42 +23,42 @@ or you could pass in a jQuery element
 	foo.listen("click", {
 		selector: "p",
 		function() { this.fadeIn();}
-	})
+	});
 
 ### Adding more listeners
 
 	foo.listen("click", {
 		selector: "div",
 		function() { this.fadeIn();}
-	})
+	});
 	
 or
 
 	foo.click.listen("click", {
 		selector: "p",
 		function() { this.fadeIn();}
-	})
+	});
 
 ### Disabling a delegate/all delegates
 
 Disable a single delegate (still keeps delegate function)
 
-	foo.click.disable("p")
+	foo.click.disable("p");
 	
 Re-enable it by
 
-	foo.click.enable("p")
+	foo.click.enable("p");
 
 
 Disable all delegates for an event (still listen for event but do nothing)
 
-	foo.click.disableAll()
+	foo.click.disableAll();
 	
 ### Unlistening an event
 
 This is equivalent to `removeEventListener`. This method just merely stops processing delegates, but does not remove actual delegates, `foo.click` still holds all delegates information.
 
-	foo.unlisten("click")
+	foo.unlisten("click");
 
 or
 
@@ -63,7 +68,7 @@ or
 
 This will call `foo.unlisten("click")`, then remove `foo.click` which holds all delegates information.
 
-	foo.remove("click")
+	foo.remove("click");
 
 **Please see the following documentation for more details.**
 
@@ -74,6 +79,7 @@ This will call `foo.unlisten("click")`, then remove `foo.click` which holds all 
 The EventList needs to be instantiated for each root element you listen to. You could use multiple instances of EventList on a single page, or even on a single element (but doing this somewhat defeat the purpose of the event delegation).
 
 Before going any further, we will need to understand a little bit about how the delegates are constructed and stored.
+
 
 ## Structure
 
@@ -100,7 +106,7 @@ A typical EventList instance looks like this
 				|- __root__: (not enumerable)
 				\- __rootSelector__: (optional, not enumerable)
 
-Following JavaScript convention, all key begin with "__" is not enumerable, so if the browser supports enumerability, those "hidden" properties will not show up in for-in loop. They are used to store additional information (root element and selector string for the root element) about current instance of EventList.
+Following JavaScript convention, all key begin with "__" is not enumerable, so if the browser supports enumerability, those "hidden" properties will not show up in for-in loop. They are used to store additional information (root element and selector string for the root element) about current instance of EventList. All hidden properties are intended for internal usage only. If you want to find out the rootElement or its selector, you should use these [public methods](#rootElement).
 
 You could access the delegates of an eventType using dot syntax (like `foo.click`). Delegates for that eventType is stored in as the key-value pair.
 
@@ -117,7 +123,8 @@ A typical DelegateList object looks like this
 				   |- __root__: (not enumerable)
 				   \- __rootSelector__: (optional, not enumerable)
 
-Like EventList object, it has some properties that are not enumerable. 
+Like EventList object, it has some properties that are not enumerable.
+If you want to find out the rootElement or its selector, you could those [public methods](#rootElement), they are identical to EventList's counterparts.
 
 ### [](id:delegatesArray)Delegates array
 
@@ -151,6 +158,8 @@ Most of `EventList` methods are implemented in `delegateList`, such as[^polyfill
 * `listen`
 * `disable`
 * `enable`
+* `getRootElement`
+* `getRootElementSelector`
 
 Calling them yields in identical effects as expected. For example (assuming `foo.click` is present), you could write
 
@@ -193,6 +202,7 @@ And using `delegateList.getEventList()` will return the EventList object in whic
  	  }
  	}
 
+
 ## Initialization
 
 	var foo = new EventList(element[, singletonName, singletonScope])
@@ -226,22 +236,22 @@ We'll create a singleton delegate for element `#article`. As usual, you could li
 	foo.listen("click", { 
 		selector: "p"
 		handler : function() { … }
-	})
+	});
 	
 Then later, you forget you've already set up delegation for `#article`, and write
 
-	var bar = new EventList("#article")
+	var bar = new EventList("#article");
 
 The `bar` is just like a pointer pointed to `foo`. Since it's a **two-way binding** between `foo` and `bar`, if additional delegates are added to `bar.click` by
 	
-	bar.listen("click", {…})
+	bar.listen("click", {…});
 
 these delegates will appear in `foo.click`, and vice versa. Same goes for `unlisted`, `remove`, `disable`, `enable` methods.
 
+When you are done with singletons, you should [destroy those singletons](#destroy).
 
 
 ## [](id:add)Adding listeners
-
 
 	foo.listen(eventType[, delegates])
 
@@ -249,7 +259,7 @@ The eventType is validated on initialisation. If the eventType is not available 
 
 The `delegates` can be omitted
 
-	foo.listen(eventType)
+	foo.listen(eventType);
 
 If given, expected types for `delegates` are:
 
@@ -261,11 +271,11 @@ For more detailed information about delegate object, please read about [Delegate
 
 add (more) delegates
 
-	foo.listen(eventType[, delegates])
+	foo.listen(eventType[, delegates]);
 	
 or if `foo[eventType]` is present
 
-	foo[eventType].listen(delegates)
+	foo[eventType].listen(delegates);
 	
 All delegates for a specific eventType are wrapped as an instance of `DelegateList`. All delegates of that eventType can be accessed at
 
@@ -275,22 +285,20 @@ as a simple array.
 
 In fact, you could simple push new delegates into the array and delegates are automatically registered. 
 
-	foo[eventType].delegates.push({...})
+	foo[eventType].delegates.push({…});
 
 But this is not recommended and does **NOT** play well with [singleton's two way binding](#singleton).
-
-
 
 
 ## Disabling/Enabling delegates
 
 Disable a single delegate (does not remove delegate)
 
-	foo.click.disable("p")
+	foo.click.disable("p");
 	
 Re-enable it by
 
-	foo.click.enable("p")
+	foo.click.enable("p");
 	
 Calling `foo.click.disable("p")` first sets `disabled: true` to object with selector that equals "p", then, when click event happens, it calls `preventDefault()` for target elements (defined by selector).
 
@@ -310,31 +318,57 @@ Afterwards, you disable this handler for foo.click with `foo.click.disable("p")`
 
 Disable all delegates for an event (still listen for event but do nothing)
 
-	foo.click.disableAll()
+	foo.click.disableAll();
 
 
 ## Removing listeners
 
 This is a clean sweep. It calls `unlisten` to remove listener, then **deletes** all delegates.
 
-	foo.remove(eventType)
+	foo.remove(eventType);
 	
 After this, `foo[eventType]` is deleted.
 
-## Get root element
 
-Show the root element
+## [](id:destroy)Destroying singletons
 
-	foo.getRootElement()
+You can destroy a singleton by
+	
+	EventList.destroySingleton(rootElementSelector);
+	
+or
+
+	foo.destroySingleton(rootElementSelector);
+	
+If you want to destroy all previous singletons, you can use
+	
+	EventList.destroySingleton();
+
+
+## [](id:rootElement)Get root element and its selector
+
+You could get the root element by
+
+	foo.getRootElement();
+
 	
 If `rootElementSelector` is available, you could get its selector with
 
-	foo.getRootElementSelector()
+	foo.getRootElementSelector();
 	
+These method are also implemented in DelegateList object, so you could use these
+
+	foo.click.getRootElement();
+
+and
+
+	foo.click.getRootElementSelector();
+
+
 
 
 [^element]: like `document`, `document.getElementsByTagName("div")[0]`
 
 [^string]: like `"document"`, `"body"`
 
-[^polyfill]: `unlisted` is not available for `delegateList`, because its targeted is a particular eventType, not delegates.
+[^polyfill]: `unlisted` is not available for `DelegateList`, because its targeted is a particular eventType, not delegates.
