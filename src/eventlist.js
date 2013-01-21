@@ -517,7 +517,10 @@
    * create a object simular to array
    * better not subclassing JavaScript Array
    * https://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array
-   * @param {arr} arr Array or or multiple addEventListener objects .
+   * @param {element} Element which all event listener registered to.
+   * @param {registeredVariable} String of the singleton name.
+   * @param {variableScope} Scope where singleton variable is stored.
+   * @return {object} Previously created singleton object or self.
    */
   function EventList(element, registeredVariable, variableScope) {
     /*global jQuery:true*/
