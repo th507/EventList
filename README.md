@@ -73,19 +73,21 @@ This will call `foo.unlisten("click")`, then remove `foo.click` which holds all 
 
 The EventList needs to be instantiated for each root element you listen to. You could use multiple instances of EventList on a single page, or even on a single element (but doing this somewhat defeat the purpose of the event delegation).
 
-Before going any further, we will need to understand how the delegate functions are stored.
+Before going any further, we will need to understand a little bit about how the delegates are constructed and stored.
 
 ## Structure
 
-The basic hiearchy of EventList is `EventList > DelegateList > delegates > handler function`.
+The basic hiearchy of EventList is 
 
-* The `EventList` object contains all the root element's `DelegateList` object, one for each eventType.
-* The `DelegateList` object holds one `delegates` array and some additional information about this eventType.
-* The `delegates` array contains multiple `handler`, one for each `selector`.
-* The `handler` function handles the action of the target element defined by `selector`.
+[EventList](#EventListObject) ▸ [DelegateList](#DelegateList) ▸ [delegates](#delegatesArray) ▸ [handler](#handler)
+
+* The EventList object contains all the root element's `DelegateList` object, one for each eventType.
+* The DelegateList object holds one `delegates` array and some additional information about this eventType.
+* The delegates array contains multiple `handler`, one for each `selector`.
+* The handler function handles the action of the target element defined by `selector`.
 							
 
-### EventList object
+### [](id:EventListObject)EventList object
 
 When instantiated, it returns an object containing all eventType you registered with EventList. 
 A typical EventList instance looks like this
@@ -102,7 +104,7 @@ Following JavaScript convention, all key begin with "__" is not enumerable, so i
 
 You could access the delegates of an eventType using dot syntax (like `foo.click`). Delegates for that eventType is stored in as the key-value pair.
 
-### [](id:delegateList)DelegateList object
+### [](id:DelegateList)DelegateList object
 
 A typical DelegateList object looks like this
 
@@ -117,7 +119,7 @@ A typical DelegateList object looks like this
 
 Like EventList object, it has some properties that are not enumerable. 
 
-### [](id:delegateList)Delegates array
+### [](id:delegatesArray)Delegates array
 
 A typical delegates array looks like this
  
@@ -158,7 +160,7 @@ Calling them yields in identical effects as expected. For example (assuming `foo
 
 to add and/or disable delegates. 
 
-### Handler function
+### [](id:handler)Handler function
 
 You could access the delegateList object in the handler, like
 
@@ -238,7 +240,7 @@ these delegates will appear in `foo.click`, and vice versa. Same goes for `unlis
 
 
 
-## [](id:add)Adding listener
+## [](id:add)Adding listeners
 
 
 	foo.listen(eventType[, delegates])
@@ -251,11 +253,11 @@ The `delegates` can be omitted
 
 If given, expected types for `delegates` are:
 
-* Mutiple delegate objects
+* Mutiple objects of delegates
 
-* Array of delegate object
+* Array of delegates
 
-For more detailed information about delegate object, please read the next section: [Delegate object](#delegateList).
+For more detailed information about delegate object, please read about [Delegate array](#delegatesArray).
 
 add (more) delegates
 
@@ -265,7 +267,7 @@ or if `foo[eventType]` is present
 
 	foo[eventType].listen(delegates)
 	
-All delegates for a specific eventType are wrapped as an instance of [`delegateList`](#delegateList). All delegates of that eventType can be accessed at
+All delegates for a specific eventType are wrapped as an instance of `DelegateList`. All delegates of that eventType can be accessed at
 
 	foo[eventType].delegates
 	
@@ -311,13 +313,24 @@ Disable all delegates for an event (still listen for event but do nothing)
 	foo.click.disableAll()
 
 
-## Removing listener
+## Removing listeners
 
 This is a clean sweep. It calls `unlisten` to remove listener, then **deletes** all delegates.
 
 	foo.remove(eventType)
 	
 After this, `foo[eventType]` is deleted.
+
+## Get root element
+
+Show the root element
+
+	foo.getRootElement()
+	
+If `rootElementSelector` is available, you could get its selector with
+
+	foo.getRootElementSelector()
+	
 
 
 [^element]: like `document`, `document.getElementsByTagName("div")[0]`
