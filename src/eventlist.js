@@ -779,7 +779,7 @@
    * @name EventList.getRootElement
    * @function
    * {{{ 2
-   * @description return the element which all event listener registered to.
+   * @description Return the element which all event listener registered to.
    * @returns {} rootElement for current EventList instance
    */
   EventList.prototype.getRootElement = function () {
@@ -791,13 +791,31 @@
       throw new Error("Root element not found.");
     }
   };
+  // 2 }}}
+  
+  /**
+   * @DelegateList function
+   * @name DelegateList.getRootElement
+   * @function
+   * {{{ 2
+   * @description Return the element which all event listener registered to.
+   * EventList.* has no way of knowing the `__root__' (rootElement)
+   * we have to delay this prototype function declaration
+   * to dismiss `EventList' not found error
+   * @returns {} rootElement for current EventList instance
+   */
+  DelegateList.prototype.getRootElement = function () {
+    return this.constructor.constructor.getRootElement();
+  };
+  // 2 }}}
+
 
   /**
    * @EventList function
    * @name EventList.getRootElementSelector
    * @function
    *
-   * @description return the element selector (if possible) which all event listener registered to.
+   * @description Return the element selector (if possible) which all event listener registered to.
    * @returns {selector} selector String for current EventList rootElement.
    */
   EventList.prototype.getRootElementSelector = function () {
@@ -813,6 +831,22 @@
   // 2 }}}
 
   /**
+   * @DelegateList function
+   * @name DelegateList.getRootElementSelector
+   * @function
+   * {{{ 2
+   * @description Return the element selector (if possible) which all event listener registered to.
+   * EventList.* has no way of knowing the `__rootSelector__' (rootElementSelector)
+   * we have to delay this prototype function declaration
+   * to dismiss `EventList' not found error
+   * @returns {} selector String for current EventList instance
+   */
+  DelegateList.prototype.getRootElementSelector = function () {
+    return this.constructor.constructor.getRootElementSelector();
+  };
+  // 2 }}}
+
+  /**
    * @EventList function
    * @name EventList.isUnlistened
    * @function
@@ -823,22 +857,6 @@
    */
   EventList.prototype.isUnlistened = function () {
     return setEnv(this).__unlistened__ || false;
-  };
-  // 2 }}}
-
-  /**
-   * @DelegateList function
-   * @name DelegateList.getRootElement
-   * @function
-   * {{{ 2
-   * @description return the element which all event listener registered to.
-   * EventList.* has no way of knowing the `__root__' (rootElement)
-   * we have to delay this prototype function declaration
-   * to dismiss `EventList' not found error
-   * @returns {} rootElement for current EventList instance
-   */
-  DelegateList.prototype.getRootElement = function () {
-    return this.constructor.constructor.getRootElement();
   };
   // 2 }}}
 
