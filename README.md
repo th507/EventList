@@ -119,9 +119,7 @@ A typical DelegateList object looks like this
 				   |- disabled: (optional)
 				   |- unlistened: (optional)
 				   |
-				   |- __event__: eventType
-				   |- __root__: (not enumerable)
-				   \- __rootSelector__: (optional, not enumerable)
+				   \- __event__: eventType
 
 Like EventList object, it has some properties that are not enumerable.
 If you want to find out the rootElement or its selector, you could those [public methods](#rootElement), they are identical to EventList's counterparts.
@@ -151,8 +149,10 @@ If you'd like to extend `selector` capability, take a look and overwrite `elemen
 
 Any delegate that goes into `EventList.listen` will be examined, if `selector` property is absent, this delegate will be ignored. So you could pass malformed delegate (like `null`, `{}`) in without raising errors.
 
-`handler` is the delegate function for target element, in which `this` is pointed to the target element. 
-	
+`handler` is the delegate function for target element, in which `this` is pointed to the target element.
+
+If `disabled` is set to true, `preventDefault()` is called on target element when eventType triggers.
+
 Most of `EventList` methods are implemented in `delegateList`, such as[^polyfill]
 
 * `listen`
@@ -300,7 +300,7 @@ Re-enable it by
 
 	foo.click.enable("p");
 	
-Calling `foo.click.disable("p")` first sets `disabled: true` to object with selector that equals "p", then, when click event happens, it calls `preventDefault()` for target elements (defined by selector).
+Calling `foo.click.disable("p")` sets `disabled: true` to object with selector that equals "p".
 
 Since JavaScript passes object by reference, objects inside delegates array are, in fact, mere references of objects you passed in. If you listen to the same object for multiple eventTypes 
 
