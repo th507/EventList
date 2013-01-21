@@ -69,7 +69,7 @@
    * @param {selector} selector to check against.
    * @return {boolean} Boolean true or false.
    */
-  function elementFitsDescription(el, selector) {
+  var elementFitsDescription = elementFitsDescription || function (el, selector) {
     if (!selector) {
       return false;
     }
@@ -117,7 +117,7 @@
       // end of default branch
     }
     return null;
-  }
+  };
   // 2 }}}
 
   /**
@@ -491,6 +491,20 @@
     return this.__unlistened__ || false;
   };
   // 2 }}}
+
+  /**
+   * @DelegateList function
+   * @name DelegateList.getEventList
+   * @function
+   * {{{ 2
+   * @description Return the EventList object in which the DelegateList lies.
+   * @returns {obj} EventList object.
+   */
+  DelegateList.prototype.getEventList = function () {
+    return this.constructor.constructor;
+  };
+  // 2 }}}
+
   // 1 }}}
 
   // EventList {{{ 1
