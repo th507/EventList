@@ -1,6 +1,6 @@
 # EventList
 
-EventList is a handy wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element.
+EventList is a handy wrapper for event delegation. It is similar to `jQuery.live`, it builds on delegation rather than binding element to target element. EventList only works for event that **bubbles up** the DOM tree.
 
 ## Basic Usage (aka tl;dr)
 
@@ -20,11 +20,23 @@ or you could pass in a jQuery element
 		function() { this.fadeIn();}
 	})
 
-Alternative methods are available. See [here](#add).
+### Adding more listeners
+
+	foo.listen("click", {
+		selector: "div",
+		function() { this.fadeIn();}
+	})
+	
+or
+
+	foo.click.listen("click", {
+		selector: "p",
+		function() { this.fadeIn();}
+	})
 
 ### Disabling a delegate/all delegates
 
-Disable a single delegate (does not remove delegate)
+Disable a single delegate (still keeps delegate function)
 
 	foo.click.disable("p")
 	
@@ -39,10 +51,9 @@ Disable all delegates for an event (still listen for event but do nothing)
 	
 ### Unlistening an event
 
-This is equivalent to `removeEventListener`. This method just merely stops processing delegates, but does not remove actual delegates, `foo.click` still holds all delegates information
+This is equivalent to `removeEventListener`. This method just merely stops processing delegates, but does not remove actual delegates, `foo.click` still holds all delegates information.
 
 	foo.unlisten("click")
-
 
 or
 
@@ -60,26 +71,42 @@ This will call `foo.unlisten("click")`, then remove `foo.click` which holds all 
 
 # Documentation
 
+The EventList needs to be instantiated for each root element you listen to. You could use multiple instances of EventList on a single page, or even on a single element (but doing this somewhat defeat the purpose of the event delegation).
+
+Before going any further, we will need to understand how the delegate functions are stored.
+
 ## Structure
 
-A typical `EventList` looks like this
+The basic hiearchy of EventList is `EventList > DelegateList > delegates > handler function`.
+
+* The `EventList` object contains all the root element's `DelegateList` object, one for each eventType.
+* The `DelegateList` object holds one `delegates` array and some additional information about this eventType.
+* The `delegates` array contains multiple `handler`, one for each `selector`.
+* The `handler` function handles the action of the target element defined by `selector`.
+							
+
+### EventList object
+
+When instantiated, it returns an object containing all eventType you registered with EventList. 
+A typical EventList instance looks like this
 
 	EventList ---
-				|- eventType: delegateList
+				|- eventType: DelegateList object
 				|- ...
-				|- eventType: delegateList
+				|- eventType: DelegateList object
 				|
 				|- __root__: (not enumerable)
 				\- __rootSelector__: (optional, not enumerable)
 
-It's an object containing all eventType you registered with EventList. You could access any eventType using dot syntax (like `foo.click`).	
-Delegates for a certain eventType is stored in as the key-value pair.
+Following JavaScript convention, all key begin with "__" is not enumerable, so if the browser supports enumerability, those "hidden" properties will not show up in for-in loop. They are used to store additional information (root element and selector string for the root element) about current instance of EventList.
+
+You could access the delegates of an eventType using dot syntax (like `foo.click`). Delegates for that eventType is stored in as the key-value pair.
 
 ### [](id:delegateList)DelegateList object
 
-A typical `DelegateList` looks like this
+A typical DelegateList object looks like this
 
-	delegateList ---
+	DelegateList ---
 				   |- delegates: delegates array
 				   |- disabled: (optional)
 				   |- unlistened: (optional)
@@ -88,19 +115,19 @@ A typical `DelegateList` looks like this
 				   |- __root__: (not enumerable)
 				   \- __rootSelector__: (optional, not enumerable)
 
+Like EventList object, it has some properties that are not enumerable. 
 
+### [](id:delegateList)Delegates array
 
-
-### [](id:delegateList)DelegateList.delegates array
-
-A typical `DelegateList.delegates` is an array that looks like this
+A typical delegates array looks like this
  
  		[
- 			{ selector: "a",
+ 			{ selector: "p",
  			  handler: function() {…}
  			},
  			{ selector: "#bar",
- 			  handler: function([delegates]) {...}
+ 			  handler: function([delegateList]) {…},
+ 			  disabled: false
  			}
 		]
 	
@@ -111,11 +138,11 @@ A typical `DelegateList.delegates` is an array that looks like this
 * tag
 * tag.class
 
-If you'd like to extend `selector` capability, take a look and overwrite `elementFitsDescription`.
+If you'd like to extend `selector` capability, take a look and overwrite `elementFitsDescription`. You can overwrite 
 
-Noted that any delegate passed into `EventList.listen` will be examined, if `selector` property is absent, this object will be ignored. So you could pass malformed object in without raising errors.
+Any delegate that goes into `EventList.listen` will be examined, if `selector` property is absent, this delegate will be ignored. So you could pass malformed delegate (like `null`, `{}`) in without raising errors.
 
-`handler` is the function for target element. In it, `this` is pointed to the target element.
+`handler` is the delegate function for target element, in which `this` is pointed to the target element. 
 	
 Most of `EventList` methods are implemented in `delegateList`, such as[^polyfill]
 
@@ -129,12 +156,40 @@ Calling them yields in identical effects as expected. For example (assuming `foo
 
 	foo.click.disable("p")
 
-to add and/or disable delegates.
+to add and/or disable delegates. 
 
-### handler function
+### Handler function
 
+You could access the delegateList object in the handler, like
 
-### accessing DelegateList/EventList object in handler
+	{ 
+	    selector: "#bar",
+ 	    handler : function([delegateList]) {
+ 	  	    // do something here
+ 	  }
+ 	}
+ 	
+In the handler function, `this` is the DOM element that initiated the event. This is the same as  inline event registration model.
+ 	
+### Accessing DelegateList and EventList object in handler function
+
+If you are building complex event interactions, you might needs to switch other handler functions on and off. You could use `delegateList` in handler function to access the DelegateList object.
+And using `delegateList.getEventList()` will return the EventList object in which the DelegateList object lies.
+
+	{
+	    selector: "#bar",
+ 	    handler : function(delegateList) {
+ 	    	// this is the DOM element that initiated the event
+ 	    	console.log(this);
+ 	    	
+ 	  	    // delegateList is referenced to its DelegateList object
+ 	  	    console.log(delegateList);
+ 	  	    
+ 	  	    // DelegateList.prototype.getEventList() returns 
+ 	  	    // the EventList object
+ 	  	    console.log(delegateList.getEventList());
+ 	  }
+ 	}
 
 ## Initialization
 
@@ -143,12 +198,12 @@ to add and/or disable delegates.
 Accepted types for `element`: 
 
 * String[^string] as `querySelector` argument (Preferred),
-* jQuery element (may **NOT** support singleton creation), 
+* jQuery element (support singleton creation when `$(element).selector` is a string), 
 * DOM Element[^element] (does **NOT** support singleton creation)
 
 ### [](id:singleton)Initialization as a singleton
 
-Pass in singleton variable name and variable scope when instantiating `EventList` will make a singleton `EventList` for that specific element.
+Passing in singleton variable name and variable scope when instantiating `EventList` will make a singleton `EventList` for that particular root element.
 
 	var singletonName = new EventList(element, singletonName, singletonScope);
 	
@@ -234,6 +289,21 @@ Disable a single delegate (does not remove delegate)
 Re-enable it by
 
 	foo.click.enable("p")
+	
+Calling `foo.click.disable("p")` first sets `disabled: true` to object with selector that equals "p", then, when click event happens, it calls `preventDefault()` for target elements (defined by selector).
+
+Since JavaScript passes object by reference, objects inside delegates array are, in fact, mere references of objects you passed in. If you listen to the same object for multiple eventTypes 
+
+	var obj =  { 	
+		selector: "p",
+ 		handler: function() {…}
+	};
+	
+ 	foo.listen("click", obj);
+ 	foo.listen("dblclick",obj);
+ 	
+Afterwards, you disable this handler for foo.click with `foo.click.disable("p")`. Now, the same handler for double-click is also disabled. Sometimes it is the desirable behavior, sometimes it is not. If you do not like this behavior, you should [clone](http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-a-javascript-object) the object before listening.
+
 
 
 Disable all delegates for an event (still listen for event but do nothing)
