@@ -340,7 +340,7 @@ or
 
 	foo.destroySingleton(rootElementSelector);
 	
-If you want to destroy all previous singletons, you can use
+If you want to destroy all previously created singletons, you can use
 	
 	EventList.destroySingleton();
 
