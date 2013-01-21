@@ -1,7 +1,7 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
 
 describe("binding", function() {
-  var obj =  { 
+  obj =  { 
     selector: "div",
     handler: function() {
       console.log("a");
@@ -10,10 +10,10 @@ describe("binding", function() {
   var evt, evt2, evt_mal, evt_del, evt_del_mal, evt_singleton, evt_dup, vitual;
   
 
-  beforeEach(function() {});
+  //beforeEach(function() {});
 
   afterEach(function() {
-    evt = evt2 = evt_mal = evt_del = evt_del_mal = evt_singleton = evt_dup = vitual = null;
+    evt = evt2 = evt_mal = evt_del = evt_del_mal = evt_singleton = evt_dup =vitual = null;
     EventList.destorySingleton();
   });
 
