@@ -873,6 +873,7 @@
     }
 
     if (arguments.length === 0) {
+      EventList.__registered__ = null;
       delete EventList.__registered__;
       return this;
     }
@@ -881,6 +882,7 @@
       for (var i in EventList.__registered__) {
         if (EventList.__registered__.hasOwnProperty(i)) {
           if (arguments[0] === i) {
+            EventList.__registered__.i = null;
             delete EventList.__registered__.i;
             return this;
           }
