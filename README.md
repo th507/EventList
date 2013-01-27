@@ -91,6 +91,10 @@ foo.remove("click");
 
 **Please see the following documentation for more details.**
 
+## License
+
+EventList is licensed under the terms of the MIT License.
+
 ----
 
 # Documentation
