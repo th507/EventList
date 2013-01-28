@@ -27,8 +27,8 @@ var foo = new EventList(document.getElementById("root-element"));
 
 ```javascript
 foo.listen("click", {
-        selector: "p",
-        function() { this.fadeIn();}
+    selector: "p",
+    function() { this.fadeIn();}
 });
 ```
 
@@ -36,16 +36,16 @@ foo.listen("click", {
 
 ```javascript
 foo.listen("click", {
-        selector: "div",
-        function() { this.fadeIn();}
+    selector: "div",
+    function() { this.fadeIn();}
 });
 ```
 
 or
 ```javascript
 foo.click.listen("click", {
-        selector: "p",
-        function() { this.fadeIn();}
+    selector: "p",
+    function() { this.fadeIn();}
 });
 ```
 
@@ -90,10 +90,6 @@ foo.remove("click");
 ```
 
 **Please see the following documentation for more details.**
-
-## License
-
-EventList is licensed under the terms of the MIT License.
 
 ----
 
@@ -244,7 +240,7 @@ var foo = new EventList(element[, singletonName, singletonScope])
 Accepted types for `element`: 
 
 * String (like `"document"`, `"body"`) as `querySelector` argument (Preferred),
-* jQuery element (support singleton creation when `$(element).selector` is a string), 
+* jQuery element (support singleton creation when `$(element).selector` is a string). From jQuery 1.9, jQuery has deprecated the use the use of `$().selector`, you should use String if possible
 * DOM Element like `document`, `document.getElementsByTagName("div")[0]` (does **NOT** support singleton creation)
 
 ### [](id:singleton)Initialization as a singleton
