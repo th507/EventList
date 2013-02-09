@@ -18,8 +18,8 @@
    * {{{ 2
    * @description Check if element has a className.
    * @param {el} Element to check.
-   * @param {className} ClassName to look for.
-   * @return {boolean} Boolean true or false.
+   * @param {String} ClassName to look for.
+   * @return {Boolean} Boolean true or false.
    */
   function elementHasClass(el, _className) {
     // has to do this check first because if _className is not present
@@ -55,10 +55,10 @@
    * 3.  tagName
    * 4.  tagName.className
    * @param {el} Element to check.
-   * @param {selector} selector to check against.
-   * @return {boolean} Boolean true or false.
+   * @param {String} selector string to check against.
+   * @return {Boolean} Boolean true or false.
    */
-  var elementFitsDescription = elementFitsDescription || function (el, selector) {
+  function elementFitsDescription(el, selector) {
     if (!selector) {
       return false;
     }
@@ -106,7 +106,7 @@
       // end of default branch
     }
     return null;
-  };
+  }
   // 2 }}}
 
   /**
@@ -119,6 +119,7 @@
    * @param {key} Key for the value.
    * @param {val} Value to be assigned.
    * @param {writableFlag} Writable or not.
+   * @return {object} Created object
    */
   function setProperty(obj, key, val, writableFlag) {
     if (Object.hasOwnProperty("defineProperty")) {
@@ -129,6 +130,7 @@
     else {
       obj[key] = val;
     }
+      return obj;
   }
   // 2 }}}
 
@@ -159,8 +161,8 @@
    * @function
    * {{{ 2
    * @description get event target (might not be necessary)
-   * @param {_event} A string representing the eventType to listen for.
-   * @returns {Element} event target as element.
+   * @param {String} A string representing the eventType to listen for.
+   * @return {Element} event target as element.
    */
   function getEventTarget(_event) {
     _event = _event || window.event;
@@ -191,8 +193,8 @@
    * @function
    * {{{ 2
    * @description set environment for EventList/DelegateList functions
-   * @param {scope} scope Scope to look for singletons
-   * @returns {_sef} Previously created singleton object or self
+   * @param {Object} scope Scope to look for singletons
+   * @return {Object} Previously created singleton object or self
    */
   function setEnv(scope) {
     var _self, _previousInstance = scope.constructor.__registered__[scope.getRootElementSelector()];
@@ -286,7 +288,7 @@
    * @function
    * {{{ 2
    * @description Get eventType for this DelegateList.
-   * @returns {string} String denoting eventType for this DelegateList.
+   * @return {string} String denoting eventType for this DelegateList.
    */
   DelegateList.prototype.getEventType = function () {
     return this.__event__ || "undefined";
@@ -312,8 +314,8 @@
    * because user might accidentally calls this method without giving an argument
    * for that circumstance, we should do nothing
    * instead, we use disableAll to modify the master disable switch
-   * @param {item} item String denoting listener object to disable.
-   * @returns {obj} DelegateList object (this).
+   * @param {String} item String denoting listener object to disable.
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.disable = function (item) {
     if (item) {
@@ -331,8 +333,8 @@
    * @description Enable a certain listener.
    * BE WARNED: (about JavaScript object referencing)
    * see the explanation above for DelegateList.disable
-   * @param {item} item String denoting listener object to enable.
-   * @returns {obj} DelegateList object (this).
+   * @param {String} item String denoting listener object to enable.
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.enable = function (item) {
     if (item) {
@@ -352,8 +354,8 @@
    * because user might accidentally calls this method without giving an argument
    * for that circumstance, we should do nothing
    * instead, we use disableAll to modify the master disable switch
-   * @param {item} item String denoting listener object to disable.
-   * @returns {obj} DelegateList object (this).
+   * @param {String} item String denoting listener object to disable.
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.disableAll = function () {
     this.disabled = true;
@@ -367,8 +369,8 @@
    * @function
    * {{{ 2
    * @description Disable all listeners for this particular eventType.
-   * @param {item} item String denoting listener object to enable.
-   * @returns {obj} DelegateList object (this).
+   * @param {String} item String denoting listener object to enable.
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.enableAll = function () {
     this.disabled = false;
@@ -419,8 +421,8 @@
    * @description  Bind (extra) listeners to a certain eventType.
    * BE WARNED: (about JavaScript object referencing)
    * see the explanation above for DelegateList.disable
-   * @param {} Array or or multiple addEventListener objects .
-   * @returns {obj} DelegateList object (this).
+   * @param {Object/Array} Array or or multiple addEventListener objects .
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.listen = function () {
     // make arguments an array
@@ -458,7 +460,7 @@
    * {{{ 2
    * @description Called removeEventListener to some listeners for current eventType.
    * @param {} item String denoting listener object to enable.
-   * @returns {obj} DelegateList object (this).
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.unlisten = function () {
     removeEventListenerHelper(this.getRootElement(), this.__event__, this);
@@ -472,7 +474,7 @@
    * @function
    * {{{ 2
    * @description Check if a certain eventType is listened to.
-   * @returns {obj} DelegateList object (this).
+   * @return {Object} DelegateList object (this).
    */
   DelegateList.prototype.isUnlistened = function () {
     return this.unlistened || false;
@@ -485,7 +487,7 @@
    * @function
    * {{{ 2
    * @description Return the EventList object in which the DelegateList lies.
-   * @returns {obj} EventList object.
+   * @return {Object} EventList object.
    */
   DelegateList.prototype.getEventList = function () {
     return this.constructor.constructor;
@@ -596,7 +598,7 @@
    * if the eventType is `Unlistened`, it will be re-attached.
    * focus and blur does NOT bubble up, so they are not supported.
    * @param {arr} arr Array or or multiple addEventListener objects.
-   * @return {} Previously created singleton object or self
+   * @return {object} Previously created singleton object or self
    */
   EventList.prototype.listen = function () {
     var _self = setEnv(this);
@@ -653,8 +655,8 @@
    * @description Called removeEventListener for a certain eventType.
    * only add a flag not to listen and removeEventListener
    * does NOT remove the EventList item
-   * @param {string} string String denoting eventType.
-   * @returns {} Previously created singleton object or self.
+   * @param {String} _event String denoting eventType.
+   * @return {Object} Previously created singleton object or self.
    */
   EventList.prototype.unlisten = function (_event) {
     var _self = setEnv(this);
@@ -672,8 +674,8 @@
    * @function
    * {{{ 2
    * @description Safe way to remove EventList item.
-   * @param {string} string String denoting eventType.
-   * @returns {} Previously created singleton object or self.
+   * @param {String} _event String denoting eventType.
+   * @return {Object} Previously created singleton object or self.
    */
   EventList.prototype.remove = function (_event) {
     var _self = setEnv(this);
@@ -691,8 +693,8 @@
    * @function
    * {{{ 2
    * @description Disable all listeners for a certain eventType.
-   * @param {string} string String denoting eventType to disable.
-   * @returns {} Previously created singleton object or self.
+   * @param {String} _event String denoting eventType to disable.
+   * @return {Object} Previously created singleton object or self.
    */
   EventList.prototype.disable = function (_event) {
     var _self = setEnv(this);
@@ -710,8 +712,8 @@
    * @function
    * {{{ 2
    * @description Enable all listeners for a certain eventType.
-   * @param {string} string String denoting eventType to enable.
-   * @returns {} Previously created singleton object or self.
+   * @param {String} _event String denoting eventType to enable.
+   * @return {Object} Previously created singleton object or self.
    */
   EventList.prototype.enable = function (_event) {
     var _self = setEnv(this);
@@ -734,7 +736,7 @@
    * for lesser browser
    * always check for `__' prefix in for-in loop
    * TODO: do we need this iterator?
-   * @param {_callback} _callback Function to execute for each eventType object.
+   * @param {function} _callback Function to execute for each eventType object.
    */
   EventList.prototype.loop = function (_callback) {
     var _self = setEnv(this);
@@ -767,7 +769,7 @@
    * @function
    * {{{ 2
    * @description Return the element which all event listener registered to.
-   * @returns {} rootElement for current EventList instance
+   * @return {Element} rootElement for current EventList instance
    */
   EventList.prototype.getRootElement = function () {
     // we do not use _self for safety reasons
@@ -789,7 +791,7 @@
    * EventList.* has no way of knowing the `__root__' (rootElement)
    * we have to delay this prototype function declaration
    * to dismiss `EventList' not found error
-   * @returns {} rootElement for current EventList instance
+   * @return {Element} rootElement for current EventList instance
    */
   DelegateList.prototype.getRootElement = function () {
     return this.constructor.constructor.getRootElement();
@@ -803,7 +805,7 @@
    * @function
    *
    * @description Return the element selector (if possible) which all event listener registered to.
-   * @returns {selector} selector String for current EventList rootElement.
+   * @return {String} selector String for current EventList rootElement.
    */
   EventList.prototype.getRootElementSelector = function () {
     // we do not use _self for safety reasons
@@ -826,7 +828,7 @@
    * EventList.* has no way of knowing the `__rootSelector__' (rootElementSelector)
    * we have to delay this prototype function declaration
    * to dismiss `EventList' not found error
-   * @returns {} selector String for current EventList instance
+   * @return {String} selector String for current EventList instance
    */
   DelegateList.prototype.getRootElementSelector = function () {
     return this.constructor.constructor.getRootElementSelector();
@@ -839,8 +841,8 @@
    * @function
    * {{{ 2
    * @description Check if a certain eventType is listened to.
-   * @param {string} string String denoting eventType to enable.
-   * @returns {} Boolean indicating whether the eventType is listened to.
+   * @param {String} string String denoting eventType to enable.
+   * @return {Boolean} Boolean indicating whether the eventType is listened to.
    */
   EventList.prototype.isUnlistened = function () {
     return setEnv(this).unlistened || false;
@@ -853,8 +855,8 @@
    * @function
    * {{{ 2
    * @description Destory one or all previously created singletons.
-   * @param {string} string String denoting eventType to enable.
-   * @returns {} this.
+   * @param {String} string String denoting eventType to enable.
+   * @return {Object} this.
    */
   EventList.destorySingleton = EventList.prototype.destorySingleton = function () {
     if (!EventList.__registered__) {
