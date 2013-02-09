@@ -11,17 +11,6 @@
   var delegateSelector = "selector", delegateFunction = "handler";
 	
   // Helper functions {{{ 1
-  // {{{ 2
-  // polyfilling hasOwnProperty for lesser browser
-  // https://gist.github.com/332357
-  if (!Object.prototype.hasOwnProperty) {
-    Object.prototype.hasOwnProperty = function (prop) {
-      var proto = this.prototype || this.constructor.prototype;
-      return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
-    };
-  }
-  // 2 }}}
-
   /**
    * @helper function
    * @name elementHasClass
