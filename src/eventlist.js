@@ -636,7 +636,6 @@
       _self[_event].listen(arr);
 
       if (_self[_event].isUnlistened) {
-        //_self.getRootElement().addEventListener(_event, _self[_event]);
         addEventListenerHelper(_self.getRootElement(), _event, _self[_event]);
         _self.unlistened = false;
       }
