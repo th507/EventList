@@ -30,14 +30,14 @@
     if (!_className) {
       return true;
     }
+    if (!el.className) {
+      return false;
+    }
 
     if ("classList" in document.body) {
       return el.classList.contains(_className);
     }
 
-    if (!el.className) {
-      return false;
-    }
     // so that we do not have to make special case for the 1st / last item
     return (new RegExp("\\b" + _className + "\\b").test(el.className));
   }
@@ -70,7 +70,7 @@
 
     switch (selector.charAt(0)) {
     case "#" :
-      if ("#" + el.id === selector) {
+      if (selector,substring(1) === el.id) {
         return el;
       }
       break;
