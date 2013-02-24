@@ -91,6 +91,10 @@ foo.remove("click");
 
 **Please see the following documentation for more details.**
 
+## License
+
+This project is licenced under the MIT licence.
+
 ----
 
 # Documentation
