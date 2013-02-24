@@ -70,7 +70,7 @@
 
     switch (selector.charAt(0)) {
     case "#" :
-      if (selector,substring(1) === el.id) {
+      if (selector.substring(1) === el.id) {
         return el;
       }
       break;
