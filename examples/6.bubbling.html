@@ -21,9 +21,7 @@ Dummy text: <a href="http://www.lipsum.com/">Lipsum Lorem (English)</a> and <a h
 </div>
 
 <div id=test-field>
-
-  <div class="test-div"><p>Click to add a new paragraph.</p></div>
-
+  <a class="test-el"><p>Click to add a new paragraph.</p></a>
 </div>
 
 
@@ -38,11 +36,12 @@ function id(el) {
 
 var evt = new EventList("#test-field");
 evt.listen("click", {
-    selector: ".test-div",
-    handler: function () {
+    selector: ".test-el",
+    handler: function (e) {
+        e.preventDefault();
         console.log(this);
-        var div = document.createElement("div");
-        div.setAttribute("class", "test-div");
+        var div = document.createElement("a");
+        div.setAttribute("class", "test-el");
         var para = document.createElement("p");
         para.insertBefore(document.createTextNode("This is a new paragraph. Click to add another one."), null);
         div.insertBefore(para, null);

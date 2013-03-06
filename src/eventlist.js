@@ -409,7 +409,7 @@
       // traverse element's parentNodes to check for a match
       while (targetElement !== _rootElement && targetElement !== _d) {
         if (elementFitsDescription(targetElement, item[delegateSelector])) {
-          execute(item[delegateFunction], targetElement, this);
+          execute(item[delegateFunction], targetElement, _event, this);
           break;
         }
         targetElement = targetElement.parentNode;

@@ -72,7 +72,7 @@ evt.listen("click", {
     },
     {
         selector: "button",
-        handler: function(delegates) {
+        handler: function(e, delegates) {
             if (/Disable/.test(this.innerHTML)) {
                 delegates.disable("p");
                 id("result").getElementsByTagName("span")[0].innerHTML = "Disabled";

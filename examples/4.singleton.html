@@ -61,7 +61,7 @@ function id(el) {
 var evt = new EventList("#test-field");
 evt.listen("click", {
         selector: "p",
-        handler: function (delegates) {
+        handler: function (e, delegates) {
             var msg = "";
             msg += "rootElement: " + delegates.constructor.constructor.getRootElementSelector();
             msg += "; eventType: " + delegates.getEventType();
@@ -77,7 +77,7 @@ var evt2 = new EventList(document.getElementById("test-field"));
 evt2.listen("click");
 evt2.click.listen({
     selector: "button",
-    handler: function(delegates) {
+    handler: function(e, delegates) {
         if (/Disable/.test(this.innerHTML)) {
             delegates.disable("p");
             id("result").getElementsByTagName("span")[0].innerHTML = "Disabled";

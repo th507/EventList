@@ -47,7 +47,7 @@ function id(el) {
 var evt = new EventList("#test-field");
 evt.listen("click", {
     selector: "p",
-    handler: function (delegates) {
+    handler: function (_event, delegates) {
         var msg = "";
         msg += "rootElement: " + delegates.constructor.constructor.getRootElementSelector();
         msg += "; eventType: " + delegates.getEventType();

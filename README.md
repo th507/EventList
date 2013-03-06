@@ -205,7 +205,7 @@ You could access the delegateList object in the handler, like
 ```javascript
 { 
     selector: "#bar",
-    handler : function([delegateList]) {
+    handler : function([_event, delegateList]) {
         // do something here
   }
 }
@@ -221,7 +221,7 @@ And using `delegateList.getEventList()` will return the EventList object in whic
 ```javascript
 {
     selector: "#bar",
-    handler : function(delegateList) {
+    handler : function(_event, delegateList) {
         // this is the DOM element that initiated the event
         console.log(this);
         
