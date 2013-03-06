@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>Live binding w/ bubbling</title>
+
+<link href="demo.css" rel="stylesheet" type="text/css">
+
+<!-- include source files here... -->
+<script src="../src/eventlist.js"></script>
+
+
+
+</head>
+
+<body>
+<h2>Live binding</h2>
+<div id=footnote>
+Dummy text: <a href="http://www.lipsum.com/">Lipsum Lorem (English)</a> and <a href="http://more.handlino.com/">MoreText (Chinese)</a>
+</div>
+
+<div id=test-field>
+
+  <div class="test-div"><p>Click to add a new paragraph.</p></div>
+
+</div>
+
+
+<div id=result><h4>EventList</h4><span>&nbsp;Log</span></div>
+<script>
+function id(el) {
+    if (!el) {
+        return;
+    }
+    return document.getElementById(el);
+}
+
+var evt = new EventList("#test-field");
+evt.listen("click", {
+    selector: ".test-div",
+    handler: function () {
+        console.log(this);
+        var div = document.createElement("div");
+        div.setAttribute("class", "test-div");
+        var para = document.createElement("p");
+        para.insertBefore(document.createTextNode("This is a new paragraph. Click to add another one."), null);
+        div.insertBefore(para, null);
+        this.parentNode.appendChild(div);
+
+        id("result").getElementsByTagName("span")[0].innerHTML = "New div added."
+    }
+});
+</script>
+</body>
+</html>
