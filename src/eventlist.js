@@ -1,7 +1,6 @@
 /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
 
-/*jshint unused:false, boss:true */
-/*jshint indent:2 */
+/*jshint browser:true, node:true, bitwise:false, boss:true, plusplus:false, indent:2 */
 
 // error, focus, blur, ... does not bubble up
 // http://www.w3.org/TR/DOM-Level-3-Events/
@@ -398,18 +397,25 @@
       return;
     }
 
-    var i, item, targetElement = getEventTarget(_event);
+    var i, item, targetElement = getEventTarget(_event), _rootElement = this.getRootElement();;
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
         _event.preventDefault();
         continue;
       }
+
       // FIXME: add documentation explaining why we use this instead of querySelector match
-      if (elementFitsDescription(targetElement, item[delegateSelector])) {
-        execute(item[delegateFunction], targetElement, this);
-      }
+      // traverse element's parentNodes to check for a match
+      while (targetElement !== _rootElement) {
+        if (elementFitsDescription(targetElement, item[delegateSelector])) {
+          execute(item[delegateFunction], targetElement, this);
+          break;
+        }
+        targetElement = targetElement.parentNode;
+      }     
     } // end of for loop
+    _rootElement = null;
   };
   // 2 }}}
 
@@ -884,6 +890,15 @@
   
   // 1 }}}
 
-  // in case we need multiple instances
-  root[name] = EventList;
+  if (typeof root.module !== 'undefined' && root.module.exports) {
+    root.module.exports = EventList;
+  }
+  else if (typeof root.define !== 'undefined' && root.define === 'function' && root.define.amd) {
+    define(name, EventList);
+  }
+  else {
+    // in case we need multiple instances
+    root[name] = EventList;
+  }
+  
 }(this, "EventList"));
