@@ -7,7 +7,7 @@
 (function (root, name) {
   "use strict";
   // you could change those key for delegates object
-  var delegateSelector = "selector", delegateFunction = "handler";
+  var _d = document, delegateSelector = "selector", delegateFunction = "handler";
 	
   // Helper functions {{{ 1
   /**
@@ -33,7 +33,7 @@
       return false;
     }
 
-    if ("classList" in document.body) {
+    if ("classList" in _d.body) {
       return el.classList.contains(_className);
     }
 
@@ -407,7 +407,7 @@
 
       // FIXME: add documentation explaining why we use this instead of querySelector match
       // traverse element's parentNodes to check for a match
-      while (targetElement !== _rootElement) {
+      while (targetElement !== _rootElement && targetElement !== _d) {
         if (elementFitsDescription(targetElement, item[delegateSelector])) {
           execute(item[delegateFunction], targetElement, this);
           break;
@@ -520,7 +520,7 @@
   function EventList(element, registeredVariable, variableScope) {
     /*global jQuery:true*/
     var selectorString = null;
-    element = element || document;
+    element = element || _d;
 
     if ("jQuery" in window && element instanceof jQuery) {
       selectorString = element.selector;
@@ -529,11 +529,11 @@
     else if (typeof element === "string") {
       if (element === "document") {
         selectorString = element;
-        element = document;
+        element = _d;
       }
-      else if ("querySelector" in document) {
+      else if ("querySelector" in _d) {
         selectorString = element;
-        element = document.querySelector(selectorString);
+        element = _d.querySelector(selectorString);
         if (!element) {
           throw new TypeError("Unable to parse element: unexpected response from querySelector.");
         }
@@ -543,10 +543,10 @@
       element = element[0];
     }
     
-    if (element === document) {
+    if (element === _d) {
       selectorString = "document";
     }
-    else if (element === document.body) {
+    else if (element === _d.body) {
       selectorString = "body";
     }
     else if (!selectorString && element.id) {
@@ -614,7 +614,7 @@
     }
     var _event = arguments[0];
 
-    if (!(("on" + _event) in document.body)) {
+    if (!(("on" + _event) in _d.body)) {
       throw new TypeError(_event + " unavailable.");
     }
 
