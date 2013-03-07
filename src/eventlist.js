@@ -1,6 +1,7 @@
 /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 fdm=marker: */
 
 /*jshint browser:true, node:true, bitwise:false, boss:true, plusplus:false, indent:2 */
+/*globals define:true */
 
 // error, focus, blur, ... does not bubble up
 // http://www.w3.org/TR/DOM-Level-3-Events/
@@ -397,7 +398,7 @@
       return;
     }
 
-    var i, item, targetElement = getEventTarget(_event), _rootElement = this.getRootElement();;
+    var i, item, targetElement = getEventTarget(_event), _rootElement = this.getRootElement();
 
     for (i = 0; item = this.delegates[i]; i++) {
       if (item.disabled) {
@@ -413,7 +414,7 @@
           break;
         }
         targetElement = targetElement.parentNode;
-      }     
+      }
     } // end of for loop
     _rootElement = null;
   };
@@ -889,6 +890,11 @@
   // 2 }}}
   
   // 1 }}}
+  
+  // adds name so it's more visible
+  // {{{ 1
+  EventList.name = "EventList";
+  DelegateList.name = "DelegateList";
 
   if (typeof root.module !== 'undefined' && root.module.exports) {
     root.module.exports = EventList;
@@ -900,5 +906,6 @@
     // in case we need multiple instances
     root[name] = EventList;
   }
+  // 1 }}}
   
 }(this, "EventList"));
