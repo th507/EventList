@@ -1,7 +1,7 @@
 {
   "name": "Eventlist",
   "description": "similar to jQuery.live",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "eventlist",
   "scripts": [
     "lib/eventlist.js"
@@ -9,6 +9,7 @@
   "license": "MIT"
 }
 
+        
         
         
         

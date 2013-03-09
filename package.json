@@ -4,7 +4,7 @@
   "homepage": "https://github.com/th507/EventList",
   "author": "Jingwei Liu <liujingwei@gmail.com>",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "lib/eventlist.js",
   "dist": "dist/eventlist.min.js",
   "devDependencies": {
@@ -15,4 +15,5 @@
   }
 }
 
+        
         
