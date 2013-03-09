@@ -8,7 +8,7 @@
 <link href="demo.css" rel="stylesheet" type="text/css">
 
 <!-- include source files here... -->
-<script src="../src/eventlist.js"></script>
+<script src="../lib/eventlist.js"></script>
 
 
 
@@ -21,7 +21,13 @@ Dummy text: <a href="http://www.lipsum.com/">Lipsum Lorem (English)</a> and <a h
 </div>
 
 <div id=test-field>
-  <a class="test-el"><p>Click to add a new paragraph.</p></a>
+    <a href="http://google.com" class="test-el">
+        <h1>Link with multiple elements in it.</h1>
+        <div>
+            <p>This event is usually difficult to catch.</p>
+        </div>
+        <p>Click to add a new paragraph.</p>
+    </a>
 </div>
 
 
@@ -39,15 +45,15 @@ evt.listen("click", {
     selector: ".test-el",
     handler: function (e) {
         e.preventDefault();
-        console.log(this);
-        var div = document.createElement("a");
-        div.setAttribute("class", "test-el");
+        var link = document.createElement("a");
+        link.setAttribute("class", "test-el");
+        link.setAttribute("href", "http://google.com");
         var para = document.createElement("p");
-        para.insertBefore(document.createTextNode("This is a new paragraph. Click to add another one."), null);
-        div.insertBefore(para, null);
-        this.parentNode.appendChild(div);
+        para.insertBefore(document.createTextNode("This is a new link. Click to add another one."), null);
+        link.insertBefore(para, null);
+        this.parentNode.appendChild(link);
 
-        id("result").getElementsByTagName("span")[0].innerHTML = "New div added."
+        id("result").getElementsByTagName("span")[0].innerHTML = "New link added."
     }
 });
 </script>
