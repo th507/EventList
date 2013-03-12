@@ -14,20 +14,11 @@ module.exports = function(grunt) {
         src: 'lib/<%= pkg.main %>.js',
         dest: 'dist/<%= pkg.main %>.min.js'
       }
-    },
-    copy: {
-      main: {
-        files: [
-          {src: ['lib/<%= pkg.main %>.js'], dest: 'dist/<%= pkg.main %>.js', filter: 'isFile'} // includes files in path
-        ]
-      }
     }
   });
 
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  //grunt.loadNpmTasks('grunt-contrib-uglify');
-  //grunt.loadNpmTasks("grunt-contrib-copy");
 
   grunt.registerTask('closure', 'using brew closure-compiler', function() {
     var exec = require('child_process').exec;
@@ -41,6 +32,6 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('build', ['jshint', 'closure']);
-  grunt.registerTask('default', ['jshint', 'copy']);
+  grunt.registerTask('default', 'jshint');
 
 };
