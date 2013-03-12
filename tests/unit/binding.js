@@ -1,7 +1,8 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
+/*globals describe, console, beforeEach, afterEach, EventList, it, expect */
 
 describe("binding", function() {
-  obj =  { 
+  var obj =  {
     selector: "div",
     handler: function() {
       console.log("a");
@@ -13,7 +14,7 @@ describe("binding", function() {
   //beforeEach(function() {});
 
   afterEach(function() {
-    evt = evt2 = evt_mal = evt_del = evt_del_mal = evt_singleton = evt_dup =vitual = null;
+    evt = evt2 = evt_mal = evt_del = evt_del_mal = evt_singleton = evt_dup = vitual = null;
     EventList.destorySingleton();
   });
 
@@ -25,7 +26,7 @@ describe("binding", function() {
     expect(evt.click.constructor.name).toEqual("DelegateList");
   });
 
-  it("EventList.listen with proper delegates", function() {    
+  it("EventList.listen with proper delegates", function() {
     evt2 = new EventList();
     evt2.listen("click", obj);
     evt2.listen("click", obj, obj);
@@ -76,7 +77,7 @@ describe("binding", function() {
 
     expect(evt_del_mal).toBeDefined();
     expect(evt_del_mal.click).toBeDefined();
-    expect(evt_del_mal.click.delegates.length).toEqual(0);  
+    expect(evt_del_mal.click.delegates.length).toEqual(0);
   });
 
   it("Singleton two-way binding with listen/unlisten", function() {
@@ -90,7 +91,7 @@ describe("binding", function() {
     evt_singleton.dblclick.disable("div");
 
     evt_dup = new EventList("body");
-    evt_dup.dblclick.disableAll();    
+    evt_dup.dblclick.disableAll();
 
 
     expect(evt_singleton).toBeDefined();

@@ -1,5 +1,6 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
-
+/*globals describe, console, beforeEach, afterEach, EventList, it, expect */
+/*jshint sub:true*/
 describe("initilization", function() {
   var evt, evt_j, evt_s, evt_s2, evt_d, evt_db, evt_gebi, evt_singleton, evt_singleton_dup, evt_singleton_noscope, evt_singleton2;
 

@@ -1,14 +1,14 @@
 /* ex: set tabstop=2 softtabstop=2 shiftwidth=2 : */
-
+/*globals describe, console, beforeEach, afterEach, EventList, it, expect */
 describe("utilities", function() {
   var that = this;
-  var evt, evt_singleton, evt_dup, obj = { 
+  var evt, evt_singleton, evt_dup, obj = {
     selector: "div",
     handler: function() {
       console.log("a");
     }
   },
-  obj2 = { 
+  obj2 = {
     selector: "div",
     handler: function() {
       console.log("a");
@@ -25,7 +25,7 @@ describe("utilities", function() {
   });
 
   // FIXME: big problem
-  // if we pass the same object to multiple eventType 
+  // if we pass the same object to multiple eventType
   // or to the same eventType multiple times
   // then when we later decide to disable it
   // it will disable all object in the same EventList
@@ -98,10 +98,8 @@ describe("utilities", function() {
 
     evt_singleton.click.enable("div");
 
-    console.log(evt_singleton);
 
     evt_dup = new EventList();
-    console.log(evt_dup);
     evt_dup.click.disable("div");
 
     expect(evt_dup.click).toBeDefined();
@@ -114,7 +112,7 @@ describe("utilities", function() {
   });
 
   it("DelegatesList disableAll/enableAll for singleton", function() {
-    new EventList("document", "evt_singleton", that);
+    var tmp = new EventList("document", "evt_singleton", that);
     that.evt_singleton.listen("click", obj);
     that.evt_singleton.click.disableAll();
 
@@ -152,7 +150,7 @@ describe("utilities", function() {
   });
 
   it("EventList disable/enable for singleton", function() {
-    new EventList("document", "evt_singleton", that);
+    var tmp = new EventList("document", "evt_singleton", that);
     that.evt_singleton.listen("click", obj);
     that.evt_singleton.disable("click");
 
@@ -166,7 +164,7 @@ describe("utilities", function() {
   });
 
   it("EventList disableAll/enableAll for singleton", function() {
-    new EventList("document", "evt_singleton", that);
+    var tmp = new EventList("document", "evt_singleton", that);
     that.evt_singleton.listen("click", obj);
 
 
