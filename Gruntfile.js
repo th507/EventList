@@ -23,7 +23,7 @@ module.exports = function(grunt) {
   grunt.registerTask('closure', 'using brew closure-compiler', function() {
     var exec = require('child_process').exec;
     var cb = this.async();
-    exec('closure-compiler --js lib/eventlist.js --create_source_map dist/eventlist.map --source_map_format=V3 --js_output_file dist/eventlist.min.js', {cwd: './'}, function(err, stdout, stderr) {
+    exec("(echo /*EventList `git tag`*/ ; closure-compiler --js lib/eventlist.js --create_source_map dist/eventlist.map --source_map_format=V3) > dist/eventlist.min.js", {cwd: './'}, function(err, stdout, stderr) {
       console.log(stdout);
       cb();
     });
